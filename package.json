@@ -1,0 +1,108 @@
+{
+  "name": "gchat_electron",
+  "version": "1.0.0",
+  "description": "Electron 기반 Google Chat 데스크탑 앱",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "dev": "NODE_ENV=development electron .",
+    "pack": "electron-builder --dir",
+    "dist": "npm run build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest tests/integration.test.js",
+    "test:unit": "jest tests/main.test.js tests/preload.test.js",
+    "test:performance": "jest tests/performance.test.js"
+  },
+  "keywords": [
+    "electron",
+    "google-chat",
+    "desktop",
+    "chat",
+    "messaging"
+  ],
+  "author": "Google Chat Desktop",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^39.2.0",
+    "electron-builder": "^26.0.12",
+    "electron-mock-ipc": "^0.3.12",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "spectron": "^19.0.0"
+  },
+  "build": {
+    "appId": "com.gchat.desktop",
+    "productName": "Google Chat Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "assets/**/*"
+    ],
+    "extraMetadata": {
+      "main": "main.js"
+    },
+    "mac": {
+      "category": "public.app-category.social-networking",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "assets/icon.icns",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "category": "Network"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
