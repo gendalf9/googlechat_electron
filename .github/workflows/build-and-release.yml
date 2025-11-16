@@ -76,15 +76,21 @@ jobs:
 
     - name: Build application (Linux)
       if: matrix.platform == 'linux'
-      run: npm run build:linux
+      run: |
+        echo "CI=false" >> $GITHUB_ENV
+        npm run build:linux
 
     - name: Build application (Windows)
       if: matrix.platform == 'windows'
-      run: npm run build:win
+      run: |
+        echo "CI=false" >> $GITHUB_ENV
+        npm run build:win
 
     - name: Build application (macOS)
       if: matrix.platform == 'mac'
-      run: npm run build:mac
+      run: |
+        echo "CI=false" >> $GITHUB_ENV
+        npm run build:mac
 
     - name: Package application
       run: npm run pack

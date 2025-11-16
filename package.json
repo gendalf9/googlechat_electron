@@ -48,6 +48,7 @@
   },
   "build": {
     "appId": "com.gchat.desktop",
+    "publish": null,
     "productName": "Google Chat Desktop",
     "directories": {
       "output": "dist"
