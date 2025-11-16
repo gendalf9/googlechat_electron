@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -8,8 +8,7 @@
       body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: #fff;
         overflow: hidden;
       }
@@ -122,11 +121,11 @@
     <script>
       // 성능 측정 시작
       if (window.performance && window.performance.mark) {
-        window.performance.mark("html-load-start");
+        window.performance.mark('html-load-start');
       }
 
-      const loading = document.getElementById("loading");
-      const errorMessage = document.getElementById("error-message");
+      const loading = document.getElementById('loading');
+      const errorMessage = document.getElementById('error-message');
       let retryCount = 0;
       const maxRetries = 3;
 
@@ -136,9 +135,8 @@
 
         // 로딩 메시지 업데이트
         if (retryCount > 0) {
-          document.querySelector(
-            ".loading-subtitle"
-          ).textContent = `다시 시도 중... (${retryCount}/${maxRetries})`;
+          document.querySelector('.loading-subtitle').textContent =
+            `다시 시도 중... (${retryCount}/${maxRetries})`;
         }
 
         // BrowserWindow를 사용하므로 직접 페이지 로드가 아님
@@ -149,27 +147,27 @@
       }
 
       function hideLoading() {
-        loading.style.opacity = "0";
+        loading.style.opacity = '0';
         setTimeout(() => {
-          loading.style.display = "none";
+          loading.style.display = 'none';
         }, 300);
       }
 
       function showError() {
-        loading.style.display = "none";
-        errorMessage.style.display = "block";
+        loading.style.display = 'none';
+        errorMessage.style.display = 'block';
       }
 
       function retryLoading() {
         if (retryCount >= maxRetries) {
-          document.querySelector(".loading-subtitle").textContent =
-            "최대 재시도 횟수를 초과했습니다.";
+          document.querySelector('.loading-subtitle').textContent =
+            '최대 재시도 횟수를 초과했습니다.';
           return;
         }
 
         retryCount++;
-        errorMessage.style.display = "none";
-        loading.style.display = "flex";
+        errorMessage.style.display = 'none';
+        loading.style.display = 'flex';
 
         loadGoogleChat();
       }
@@ -177,16 +175,16 @@
       // 성능 모니터링 제거 (CPU 절약)
 
       // 초기화
-      document.addEventListener("DOMContentLoaded", () => {
-        console.log("HTML loaded, preparing app");
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('HTML loaded, preparing app');
 
         // Electron API 확인
         if (window.electronAPI) {
-          console.log("Electron API available");
-          console.log("App version:", window.electronAPI.getAppVersion());
-          console.log("Platform:", window.electronAPI.getPlatform());
+          console.log('Electron API available');
+          console.log('App version:', window.electronAPI.getAppVersion());
+          console.log('Platform:', window.electronAPI.getPlatform());
         } else {
-          console.warn("Electron API not available");
+          console.warn('Electron API not available');
         }
 
         // Google Chat 로드 시작
@@ -196,16 +194,12 @@
       });
 
       // 페이지 로드 완료
-      window.addEventListener("load", () => {
+      window.addEventListener('load', () => {
         if (window.performance && window.performance.mark) {
-          window.performance.mark("html-load-end");
-          window.performance.measure(
-            "html-loading",
-            "html-load-start",
-            "html-load-end"
-          );
+          window.performance.mark('html-load-end');
+          window.performance.measure('html-loading', 'html-load-start', 'html-load-end');
 
-          const measures = window.performance.getEntriesByName("html-loading");
+          const measures = window.performance.getEntriesByName('html-loading');
           if (measures.length > 0) {
             console.log(`HTML loaded in ${measures[0].duration}ms`);
           }
@@ -215,10 +209,10 @@
       });
 
       // 키보드 이벤트 핸들링 (fallback)
-      document.addEventListener("keydown", (e) => {
+      document.addEventListener('keydown', e => {
         // Electron API가 없을 때의 기본 동작
         if (!window.electronAPI) {
-          if ((e.metaKey || e.ctrlKey) && e.key === "r") {
+          if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
             e.preventDefault();
             window.location.reload();
           }
@@ -226,11 +220,11 @@
       });
 
       // 에러 핸들링
-      window.addEventListener("error", (e) => {
-        console.error("HTML Error:", e.error);
+      window.addEventListener('error', e => {
+        console.error('HTML Error:', e.error);
 
         // 네트워크 에러인 경우 재시도
-        if (e.message.includes("net::") || e.message.includes("Network")) {
+        if (e.message.includes('net::') || e.message.includes('Network')) {
           if (retryCount < maxRetries) {
             setTimeout(retryLoading, 2000);
           } else {
@@ -240,8 +234,8 @@
       });
 
       // 언로드 시 정리
-      window.addEventListener("beforeunload", () => {
-        console.log("HTML unloading - cleaning up");
+      window.addEventListener('beforeunload', () => {
+        console.log('HTML unloading - cleaning up');
 
         // 성능 측정 정리
         if (window.performance && window.performance.clearMarks) {

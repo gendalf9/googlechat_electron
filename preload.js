@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   hideWindow: () => ipcRenderer.send('hide-window'),
 
   // 외부 링크 열기
-  openExternal: (url) => ipcRenderer.send('open-external', url),
+  openExternal: url => ipcRenderer.send('open-external', url),
 
   // 앱 정보
   getAppVersion: () => process.env.APP_VERSION || '1.0.0',
@@ -28,22 +28,21 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 // 페이지 로딩 최적화
 window.addEventListener('DOMContentLoaded', () => {
-  
   // 성능 측정 시작
   if (window.performance && window.performance.mark) {
     window.performance.mark('app-start');
   }
-  
+
   // DOMContentLoaded 이후 최적화
   setTimeout(() => {
     // 불필요한 이벤트 리스너 제거
     cleanupUnusedListeners();
-    
+
     // 성능 측정 종료
     if (window.performance && window.performance.mark) {
       window.performance.mark('app-ready');
       window.performance.measure('app-loading', 'app-start', 'app-ready');
-      
+
       const measures = window.performance.getEntriesByName('app-loading');
       if (measures.length > 0) {
         console.log(`App loaded in ${measures[0].duration}ms`);
@@ -80,7 +79,11 @@ function setupTitleObserver() {
         lastTitle = currentTitle;
 
         // 새 메시지가 있는 경우에만 알림 (단순화된 메시지)
-        if (currentTitle && currentTitle !== 'Google Chat' && currentTitle !== 'Google Chat Desktop') {
+        if (
+          currentTitle &&
+          currentTitle !== 'Google Chat' &&
+          currentTitle !== 'Google Chat Desktop'
+        ) {
           // 디바운싱 적용 (너무 많은 알림 방지)
           if (window.titleNotificationTimeout) {
             clearTimeout(window.titleNotificationTimeout);
@@ -113,10 +116,10 @@ window.addEventListener('beforeunload', () => {
 });
 
 // 최적화된 키보드 이벤트 핸들링
-const keyboardHandler = (e) => {
+const keyboardHandler = e => {
   // 이미 처리된 이벤트는 무시
   if (e.defaultPrevented) return;
-  
+
   // Cmd/Ctrl + W: 창 닫기 대신 숨기기
   if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
     e.preventDefault();
@@ -125,7 +128,7 @@ const keyboardHandler = (e) => {
     }
     return;
   }
-  
+
   // Cmd/Ctrl + R: 새로고침
   if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
     // Shift 키가 없을 때만 기본 동작 방지
@@ -135,13 +138,15 @@ const keyboardHandler = (e) => {
     }
     return;
   }
-  
+
   // Cmd/Ctrl + N: 새 채팅
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
     e.preventDefault();
     // 캐싱된 선택자 사용
     if (!window.newChatButton) {
-      window.newChatButton = document.querySelector('[aria-label*="새 채팅"], [aria-label*="New chat"], [data-tooltip*="새 채팅"], [data-tooltip*="New chat"]');
+      window.newChatButton = document.querySelector(
+        '[aria-label*="새 채팅"], [aria-label*="New chat"], [data-tooltip*="새 채팅"], [data-tooltip*="New chat"]'
+      );
     }
     if (window.newChatButton) {
       window.newChatButton.click();
@@ -154,17 +159,17 @@ const keyboardHandler = (e) => {
 document.addEventListener('keydown', keyboardHandler, { passive: false });
 
 // 에러 핸들링 최적화
-window.addEventListener('error', (e) => {
+window.addEventListener('error', e => {
   // 반복적인 에러 로깅 방지
   if (!window.errorLog) {
     window.errorLog = new Set();
   }
-  
+
   const errorKey = `${e.filename}:${e.lineno}:${e.message}`;
   if (!window.errorLog.has(errorKey)) {
     window.errorLog.add(errorKey);
     console.error('Page error:', e.error);
-    
+
     // 메모리 정리
     if (window.errorLog.size > 100) {
       window.errorLog.clear();
@@ -175,21 +180,21 @@ window.addEventListener('error', (e) => {
 // 언로드 시 정리
 window.addEventListener('beforeunload', () => {
   console.log('Page unloading - cleaning up');
-  
+
   // 관찰자 정리
   if (titleObserver) {
     titleObserver.disconnect();
     titleObserver = null;
   }
-  
+
   // 타이머 정리
   if (window.titleNotificationTimeout) {
     clearTimeout(window.titleNotificationTimeout);
   }
-  
+
   // 이벤트 리스너 정리
   document.removeEventListener('keydown', keyboardHandler);
-  
+
   // 성능 측정 정리
   if (window.performance && window.performance.clearMarks) {
     window.performance.clearMarks();

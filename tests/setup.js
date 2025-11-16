@@ -1,6 +1,12 @@
 // Setup file for Jest tests
+const { TextEncoder, TextDecoder } = require('util');
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+
+// Define window object if not exists
+if (typeof window === 'undefined') {
+  global.window = {};
+}
 
 // Mock localStorage
 const localStorageMock = (() => {

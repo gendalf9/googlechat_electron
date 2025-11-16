@@ -47,12 +47,15 @@ function createWindow() {
   });
 
   // Google Chat 직접 로드
-  mainWindow.loadURL('https://chat.google.com', {
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    httpReferrer: 'https://chat.google.com'
-  }).catch(error => {
-    // 에러 처리 (프로덕션에서는 로그 제거)
-  });
+  mainWindow
+    .loadURL('https://chat.google.com', {
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      httpReferrer: 'https://chat.google.com'
+    })
+    .catch(_error => {
+      // 에러 처리 (프로덕션에서는 로그 제거)
+    });
 
   // 창이 준비되면 즉시 표시
   mainWindow.once('ready-to-show', () => {
@@ -93,7 +96,10 @@ function createWindow() {
     const parsedUrl = new URL(navigationUrl);
 
     // Google Chat 도메인이 아니면 이동 방지 및 시스템 브라우저에서 열기
-    if (!parsedUrl.hostname.includes('chat.google.com') && !parsedUrl.hostname.includes('google.com')) {
+    if (
+      !parsedUrl.hostname.includes('chat.google.com') &&
+      !parsedUrl.hostname.includes('google.com')
+    ) {
       event.preventDefault();
       require('electron').shell.openExternal(navigationUrl);
     }
@@ -102,7 +108,7 @@ function createWindow() {
   // 우클릭 메뉴 활성화
   mainWindow.webContents.on('context-menu', (event, params) => {
     event.preventDefault();
-    const { contextMenu, Menu } = require('electron');
+    const { Menu } = require('electron');
 
     const contextMenuTemplate = [
       { role: 'cut', label: '잘라내기' },
@@ -116,7 +122,9 @@ function createWindow() {
         click: () => {
           const selectedText = params.selectionText;
           if (selectedText) {
-            require('electron').shell.openExternal(`https://www.google.com/search?q=${encodeURIComponent(selectedText)}`);
+            require('electron').shell.openExternal(
+              `https://www.google.com/search?q=${encodeURIComponent(selectedText)}`
+            );
           }
         }
       },
@@ -210,7 +218,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  mainWindow.on('close', (event) => {
+  mainWindow.on('close', event => {
     if (!app.isQuitting) {
       event.preventDefault();
       mainWindow.hide();
@@ -252,10 +260,10 @@ function createTray() {
       }
     }
   ]);
-  
+
   tray.setToolTip('Google Chat Desktop');
   tray.setContextMenu(contextMenu);
-  
+
   tray.on('click', () => {
     if (mainWindow) {
       if (mainWindow.isVisible()) {
@@ -272,8 +280,8 @@ function createTray() {
 
 function showNotification(title, body) {
   new Notification({
-    title: title,
-    body: body,
+    title,
+    body,
     icon: path.join(__dirname, 'assets/icon.png'),
     silent: false,
     urgency: 'normal'
@@ -368,14 +376,15 @@ function createMenu() {
               type: 'info',
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
-              detail: 'Version 1.0.0 (Optimized)\nElectron 기반 Google Chat 데스크탑 앱\n\n최적화된 성능으로 더 빠른 실행 속도를 제공합니다.'
+              detail:
+                'Version 1.0.0 (Optimized)\nElectron 기반 Google Chat 데스크탑 앱\n\n최적화된 성능으로 더 빠른 실행 속도를 제공합니다.'
             });
           }
         }
       ]
     }
   ];
-  
+
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }
@@ -434,7 +443,7 @@ ipcMain.on('open-external', (event, url) => {
 });
 
 // 성능 모니터링
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   console.error('Uncaught Exception:', error);
 });
 
