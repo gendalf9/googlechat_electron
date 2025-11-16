@@ -16,17 +16,15 @@ Object.defineProperty(window, 'performance', {
   writable: true
 });
 
-Object.defineProperty(window, 'document', {
-  value: {
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    createElement: jest.fn(),
-    title: 'Google Chat',
-    querySelector: jest.fn(),
-    readyState: 'complete'
-  },
-  writable: true
-});
+// Extend existing document object instead of redefining it
+if (window.document) {
+  window.document.addEventListener = jest.fn();
+  window.document.removeEventListener = jest.fn();
+  window.document.createElement = jest.fn();
+  window.document.title = 'Google Chat';
+  window.document.querySelector = jest.fn();
+  window.document.readyState = 'complete';
+}
 
 Object.defineProperty(window, 'requestIdleCallback', {
   value: jest.fn(),

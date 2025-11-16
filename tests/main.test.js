@@ -38,7 +38,7 @@ jest.mock('electron', () => ({
   },
   Notification: jest.fn().mockImplementation(() => ({
     show: jest.fn()
-  }),
+  })),
   shell: {
     openExternal: jest.fn()
   }

@@ -5,8 +5,11 @@ describe('Application Integration Tests', () => {
   let app;
 
   beforeEach(async () => {
+    // Try to find electron in different possible locations
+    const electronPath = require('electron');
+
     app = new Application({
-      path: path.join(__dirname, '../../node_modules/.bin/electron'),
+      path: electronPath,
       args: [path.join(__dirname, '../main.js')],
       env: {
         NODE_ENV: 'test'
