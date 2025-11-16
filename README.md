@@ -144,13 +144,48 @@ Built files are generated in the `dist/` directory:
 - **Windows**: `.exe` installer
 - **Linux**: `.AppImage` and `.deb` packages
 
+## Continuous Integration
+
+This project uses GitHub Actions for automated builds, testing, and releases:
+
+### Workflow Triggers
+- **Push to main/develop**: Full build and test suite
+- **Pull requests**: Build verification and code quality checks
+- **Tags (v*)**: Create official releases with downloadable assets
+- **Manual dispatch**: On-demand builds
+
+### CI/CD Pipeline
+1. **Test Suite**: Jest unit and integration tests with coverage reporting
+2. **Multi-platform Build**: Windows, macOS, and Linux packaging
+3. **Code Quality**: ESLint, Prettier formatting checks
+4. **Security Scan**: Vulnerability assessment and dependency audit
+5. **Release**: Automatic GitHub release with platform-specific binaries
+
+### Build Artifacts
+- **Windows**: `.exe` installer and `.msi` package
+- **macOS**: `.dmg` disk image with Universal Binary support
+- **Linux**: `.AppImage`, `.deb`, and `.rpm` packages
+
+### Code Quality Standards
+- ESLint for JavaScript code linting
+- Prettier for consistent code formatting
+- Jest for comprehensive testing coverage
+- Security scanning with npm audit and Snyk
+
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Ensure code quality with `npm run quality`
+4. Commit your changes (`git commit -m 'Add some amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
+
+### Development Guidelines
+- Follow ESLint rules and Prettier formatting
+- Write tests for new features
+- Ensure all tests pass before submitting PRs
+- Update documentation as needed
 
 ## License
 

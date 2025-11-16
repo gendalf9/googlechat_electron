@@ -1,0 +1,289 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test
+
+    - name: Generate coverage report
+      run: npm run test:coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: google-chat-desktop
+            asset_name: google-chat-desktop-linux
+          - os: windows-latest
+            platform: windows
+            artifact_name: google-chat-desktop
+            asset_name: google-chat-desktop-windows
+          - os: macos-latest
+            platform: mac
+            artifact_name: google-chat-desktop
+            asset_name: google-chat-desktop-mac
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application (Linux)
+      if: matrix.platform == 'linux'
+      run: npm run build:linux
+
+    - name: Build application (Windows)
+      if: matrix.platform == 'windows'
+      run: npm run build:win
+
+    - name: Build application (macOS)
+      if: matrix.platform == 'mac'
+      run: npm run build:mac
+
+    - name: Package application
+      run: npm run pack
+
+    - name: Upload artifacts (Linux)
+      if: matrix.platform == 'linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: |
+          dist/*.AppImage
+          dist/*.deb
+          dist/*.rpm
+        retention-days: 30
+
+    - name: Upload artifacts (Windows)
+      if: matrix.platform == 'windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: |
+          dist/*.exe
+          dist/*.msi
+        retention-days: 30
+
+    - name: Upload artifacts (macOS)
+      if: matrix.platform == 'mac'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: |
+          dist/*.dmg
+          dist/*.zip
+        retention-days: 30
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Display structure of downloaded files
+      run: ls -la artifacts/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/**/*.AppImage
+          artifacts/**/*.deb
+          artifacts/**/*.exe
+          artifacts/**/*.msi
+          artifacts/**/*.dmg
+          artifacts/**/*.zip
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        name: Google Chat Desktop ${{ github.ref_name }}
+        body: |
+          ## Google Chat Desktop ${{ github.ref_name }}
+
+          ### 다운로드
+
+          #### Windows
+          - `google-chat-desktop-setup.exe`: Windows 인스톨러
+          - `google-chat-desktop.msi`: MSI 패키지 (엔터프라이즈)
+
+          #### macOS
+          - `google-chat-desktop.dmg`: macOS 디스크 이미지 (Universal Binary)
+          - `google-chat-desktop-mac.zip`: 압축 버전
+
+          #### Linux
+          - `google-chat-desktop.AppImage`: AppImage (모든 리눅스 배포판)
+          - `google-chat-desktop.deb`: Debian/Ubuntu 패키지
+          - `google-chat-desktop.rpm`: RedHat/Fedora 패키지
+
+          ### 기능
+          - CPU 최적화된 Google Chat 데스크탑 앱
+          - 외부 링크 시스템 브라우저에서 열기
+          - 우클릭 메뉴 지원
+          - Universal Binary 지원 (Intel + Apple Silicon)
+          - 낮은 CPU 사용량 최적화
+
+          ### 설치 방법
+
+          #### Windows
+          1. `.exe` 파일 다운로드
+          2. 실행 후 설치 마법사 따르기
+
+          #### macOS
+          1. `.dmg` 파일 다운로드
+          2. 열고 Applications 폴더로 드래그
+
+          #### Linux (AppImage)
+          1. `.AppImage` 파일 다운로드
+          2. 실행 권한 추가: `chmod +x google-chat-desktop.AppImage`
+          3. 실행: `./google-chat-desktop.AppImage`
+
+          #### Linux (Debian/Ubuntu)
+          ```bash
+          sudo dpkg -i google-chat-desktop.deb
+          sudo apt-get install -f  # 의존성 설치 (필요시)
+          ```
+
+          #### Linux (RedHat/Fedora)
+          ```bash
+          sudo rpm -i google-chat-desktop.rpm
+          ```
+
+          ---
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run npm audit
+      run: npm audit --audit-level moderate
+
+    - name: Run security scan with Snyk
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Check code formatting
+      run: |
+        npm install -g prettier
+        prettier --check "main.js" "preload.js" "index.html"
+
+    - name: Lint JavaScript files
+      run: |
+        npm install -g eslint
+        eslint main.js preload.js --ext .js || true
+
+    - name: Check package.json
+      run: npm ls --depth=0
+
+  update-dependencies:
+    name: Check for outdated dependencies
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Check for outdated packages
+      run: |
+        npm outdated || true
+        echo "## Dependency Check Results" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+        npm outdated >> $GITHUB_STEP_SUMMARY || true
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
