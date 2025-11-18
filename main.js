@@ -76,8 +76,10 @@ function createWindow() {
     }
   }, 3000); // 3초 후 강제 표시
 
-  // 개발자 도구 (디버깅을 위해 항상 활성화)
-  mainWindow.webContents.openDevTools();
+  // 개발자 도구는 개발 모드에서만 활성화
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
 
   // 새 창 열기 제어 - 모든 외부 링크는 시스템 브라우저에서 열기
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -548,15 +550,19 @@ function createMenu() {
             }
           }
         },
-        {
-          label: '개발자 도구',
-          accelerator: 'F12',
-          click: () => {
-            if (mainWindow) {
-              mainWindow.webContents.toggleDevTools();
-            }
-          }
-        },
+        ...(process.env.NODE_ENV === 'development'
+          ? [
+              {
+                label: '개발자 도구',
+                accelerator: 'F12',
+                click: () => {
+                  if (mainWindow) {
+                    mainWindow.webContents.toggleDevTools();
+                  }
+                }
+              }
+            ]
+          : []),
         {
           type: 'separator'
         },
@@ -587,7 +593,6 @@ function createMenu() {
       submenu: [
         { role: 'reload', label: '새로고침' },
         { role: 'forcereload', label: '강제 새로고침' },
-        { role: 'toggledevtools', label: '개발자 도구' },
         { type: 'separator' },
         { role: 'resetzoom', label: '확대/축소 초기화' },
         { role: 'zoomin', label: '확대' },
@@ -614,7 +619,7 @@ function createMenu() {
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
               detail:
-                'Version 1.0.0 (Optimized)\nElectron 기반 Google Chat 데스크탑 앱\n\n최적화된 성능으로 더 빠른 실행 속도를 제공합니다.'
+                'Version 1.0.3 (Stable)\nElectron 기반 Google Chat 데스크탑 앱\n\n보안 및 코드 품질 개선, 이미지 다운로드 기능 포함.'
             });
           }
         }
