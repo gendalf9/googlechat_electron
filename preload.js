@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // 외부 링크 열기
   openExternal: url => ipcRenderer.send('open-external', url),
 
+  // 파일 다운로드
+  downloadFile: (url, fileName) => ipcRenderer.send('download-file', url, fileName),
+
   // 앱 정보
   getAppVersion: () => process.env.APP_VERSION || '1.0.0',
 
