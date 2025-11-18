@@ -619,7 +619,7 @@ function createMenu() {
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
               detail:
-                'Version 1.0.3 (Stable)\nElectron 기반 Google Chat 데스크탑 앱\n\n보안 및 코드 품질 개선, 이미지 다운로드 기능 포함.'
+                'Version 1.0.4 (Production Ready)\nElectron 기반 Google Chat 데스크탑 앱\n\n보안 및 코드 품질 개선, 이미지 다운로드 기능, DevTools 제거 포함.'
             });
           }
         }
