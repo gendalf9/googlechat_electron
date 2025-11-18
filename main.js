@@ -127,19 +127,21 @@ function createWindow() {
 
         // 다운로드 폴더 열기 �션
         if (process.platform === 'darwin') {
-          dialog.showMessageBox(mainWindow, {
-            type: 'info',
-            buttons: ['확인', '폴더 열기'],
-            defaultId: 0,
-            title: '다운로드 완료',
-            message: '파일 다운로드가 완료되었습니다.',
-            detail: `${fileName} 파일이 다운로드 폴더에 저장되었습니다.`
-          }).then((result) => {
-            if (result.response === 1) {
-              // 폴더 열기 선택 시
-              require('electron').shell.openPath(downloadDir);
-            }
-          });
+          dialog
+            .showMessageBox(mainWindow, {
+              type: 'info',
+              buttons: ['확인', '폴더 열기'],
+              defaultId: 0,
+              title: '다운로드 완료',
+              message: '파일 다운로드가 완료되었습니다.',
+              detail: `${fileName} 파일이 다운로드 폴더에 저장되었습니다.`
+            })
+            .then(result => {
+              if (result.response === 1) {
+                // 폴더 열기 선택 시
+                require('electron').shell.openPath(downloadDir);
+              }
+            });
         }
       } else {
         // 다운로드 실패 시 알림
@@ -704,7 +706,6 @@ ipcMain.on('download-file', async (event, url, fileName) => {
         silent: false
       }).show();
     }
-
   } catch (error) {
     new Notification({
       title: '다운로드 실패',
