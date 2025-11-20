@@ -1,6 +1,6 @@
 {
   "name": "gchat_electron",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Electron 기반 Google Chat 데스크탑 앱",
   "main": "main.js",
   "scripts": {

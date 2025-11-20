@@ -690,7 +690,7 @@ function createMenu() {
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
               detail:
-                'Version 1.0.5 (Security & Memory Fixes)\nElectron 기반 Google Chat 데스크탑 앱\n\n메모리 릭 수정, 보안 취약점 해결, 코드 품질 개선 포함.'
+                'Version 1.0.6 (Test Suite Update)\nElectron 기반 Google Chat 데스크탑 앱\n\n메모리 릭 수정, 보안 취약점 해결, 테스트 케이스 업데이트 포함.'
             });
           }
         }
