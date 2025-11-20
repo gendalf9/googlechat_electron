@@ -55,9 +55,10 @@ describe('Preload Script Tests', () => {
       const fs = require('fs');
       const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
 
-      // Check for performance-related code
-      expect(preloadContent).toContain('setInterval');
+      // Check for performance-related code (updated for memory leak fixes)
+      expect(preloadContent).toContain('MutationObserver');
       expect(preloadContent).toContain('title');
+      expect(preloadContent).toContain('cleanup');
     }).not.toThrow();
   });
 
