@@ -4,6 +4,10 @@ const path = require('path');
 let mainWindow;
 let tray = null;
 
+// Memory management: store all timers and intervals for cleanup
+const timers = new Set();
+const intervals = new Set();
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -69,12 +73,15 @@ function createWindow() {
   });
 
   // 대체: ready-to-show 이벤트가 발생하지 않을 경우를 대비
-  setTimeout(() => {
+  const showTimer = setTimeout(() => {
     if (mainWindow && !mainWindow.isVisible()) {
       mainWindow.show();
       mainWindow.focus();
     }
   }, 3000); // 3초 후 강제 표시
+
+  // Store timer for cleanup
+  timers.add(showTimer);
 
   // 개발자 도구는 개발 모드에서만 활성화
   if (process.env.NODE_ENV === 'development') {
@@ -91,70 +98,76 @@ function createWindow() {
     return { action: 'deny' };
   });
 
-  // 다운로드 핸들러 추가
-  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
-    // 사용자에게 다운로드 위치를 묻지 않고 기본 다운로드 폴더에 저장
-    const { dialog } = require('electron');
-    const { app } = require('electron');
-    const path = require('path');
+  // 다운로드 핸들러 추가 (메모리 릭 방지를 위해 한 번만 등록)
+  const setupDownloadHandler = () => {
+    if (mainWindow.webContents.session.listenerCount('will-download') === 0) {
+      mainWindow.webContents.session.on('will-download', (event, item, _webContents) => {
+        // 사용자에게 다운로드 위치를 묻지 않고 기본 다운로드 폴더에 저장
+        const { dialog } = require('electron');
+        const { app } = require('electron');
+        const path = require('path');
 
-    // 기본 다운로드 디렉토리 가져오기
-    const downloadDir = app.getPath('downloads');
+        // 기본 다운로드 디렉토리 가져오기
+        const downloadDir = app.getPath('downloads');
 
-    // 파일명이 한글일 경우 깨짐 방지 처리
-    let fileName = item.getFilename();
-    try {
-      // 파일명이 URL 인코딩되어 있을 경우 디코딩
-      fileName = decodeURIComponent(fileName);
-    } catch (e) {
-      // 디코딩 실패 시 원래 파일명 사용
+        // 파일명이 한글일 경우 깨짐 방지 처리
+        let fileName = item.getFilename();
+        try {
+          // 파일명이 URL 인코딩되어 있을 경우 디코딩
+          fileName = decodeURIComponent(fileName);
+        } catch (e) {
+          // 디코딩 실패 시 원래 파일명 사용
+        }
+
+        // 다운로드 경로 설정
+        const filePath = path.join(downloadDir, fileName);
+        item.setSavePath(filePath);
+
+        // 다운로드 완료 시 알림 (메모리 릭 방지를 위해 once 사용)
+        item.once('done', (event, state) => {
+          if (state === 'completed') {
+            // 다운로드 완료 알림
+            if (process.platform === 'darwin') {
+              // macOS에서는 알림 표시
+              new Notification({
+                title: '다운로드 완료',
+                body: `${fileName}이(가) 다운로드되었습니다.`,
+                silent: false
+              }).show();
+            }
+
+            // 다운로드 폴더 열기 옵션
+            if (process.platform === 'darwin') {
+              dialog
+                .showMessageBox(mainWindow, {
+                  type: 'info',
+                  buttons: ['확인', '폴더 열기'],
+                  defaultId: 0,
+                  title: '다운로드 완료',
+                  message: '파일 다운로드가 완료되었습니다.',
+                  detail: `${fileName} 파일이 다운로드 폴더에 저장되었습니다.`
+                })
+                .then(result => {
+                  if (result.response === 1) {
+                    // 폴더 열기 선택 시
+                    require('electron').shell.openPath(downloadDir);
+                  }
+                });
+            }
+          } else {
+            // 다운로드 실패 시 알림
+            new Notification({
+              title: '다운로드 실패',
+              body: `${fileName} 다운로드에 실패했습니다.`,
+              silent: false
+            }).show();
+          }
+        });
+      });
     }
+  };
 
-    // 다운로드 경로 설정
-    const filePath = path.join(downloadDir, fileName);
-    item.setSavePath(filePath);
-
-    // 다운로드 완료 시 알림
-    item.once('done', (event, state) => {
-      if (state === 'completed') {
-        // 다운로드 완료 알림
-        if (process.platform === 'darwin') {
-          // macOS에서는 알림 표시
-          new Notification({
-            title: '다운로드 완료',
-            body: `${fileName}이(가) 다운로드되었습니다.`,
-            silent: false
-          }).show();
-        }
-
-        // 다운로드 폴더 열기 �션
-        if (process.platform === 'darwin') {
-          dialog
-            .showMessageBox(mainWindow, {
-              type: 'info',
-              buttons: ['확인', '폴더 열기'],
-              defaultId: 0,
-              title: '다운로드 완료',
-              message: '파일 다운로드가 완료되었습니다.',
-              detail: `${fileName} 파일이 다운로드 폴더에 저장되었습니다.`
-            })
-            .then(result => {
-              if (result.response === 1) {
-                // 폴더 열기 선택 시
-                require('electron').shell.openPath(downloadDir);
-              }
-            });
-        }
-      } else {
-        // 다운로드 실패 시 알림
-        new Notification({
-          title: '다운로드 실패',
-          body: `${fileName} 다운로드에 실패했습니다.`,
-          silent: false
-        }).show();
-      }
-    });
-  });
+  setupDownloadHandler();
 
   // 네비게이션 제어 - Google Chat 외부 페이지 이동 방지
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
@@ -208,10 +221,28 @@ function createWindow() {
     menu.popup();
   });
 
-  // Google Chat 로드 후 CPU 최적화 및 링크 처리
+  // Google Chat 로드 후 CPU 최적화 및 링크 처리 (메모리 릭 방지)
   mainWindow.webContents.on('did-finish-load', () => {
     // 필수적인 리플로우 기능 유지하면서 CPU 최적화
     const jsCode = `
+      // 메모리 관리: 중복 이벤트 리스너 방지를 위한 플래그
+      if (window.gchatEventListenersSetup) {
+        console.log('Event listeners already setup, skipping...');
+        return;
+      }
+      window.gchatEventListenersSetup = true;
+
+      // 기존 이벤트 리스너 정리 (있을 경우)
+      const cleanupExistingListeners = () => {
+        if (window.gchatCleanupFunctions) {
+          window.gchatCleanupFunctions.forEach(cleanup => cleanup());
+          window.gchatCleanupFunctions = [];
+        }
+      };
+
+      // 정리 함수 배열 초기화
+      window.gchatCleanupFunctions = [];
+
       // 필수 기능만 유지하는 최적화 스타일
       const style = document.createElement('style');
       style.textContent = '/* 불필요한 애니메이션만 줄이기 */ * { animation-duration: 0.1s !important; transition-duration: 0.1s !important; } /* 불필요한 요소만 숨기기 */ .loading-indicator, .spinner, .progress { display: none !important; } /* 입력 필드 관련 스타일은 유지 */ input, textarea, [contenteditable="true"] { animation: none !important; transition: none !important; }';
@@ -219,8 +250,8 @@ function createWindow() {
 
       // 외부 링크 처리 설정
       function setupExternalLinks() {
-        // 모든 외부 링크를 시스템 브라우저에서 열기
-        document.addEventListener('click', function(e) {
+        // 기존 리스너 제거
+        const externalLinksHandler = function(e) {
           const target = e.target.closest('a');
           if (target && target.href) {
             if (!target.href.includes('chat.google.com') && !target.href.includes('google.com/chat')) {
@@ -231,13 +262,18 @@ function createWindow() {
               }
             }
           }
-        }, true);
+        };
+
+        document.addEventListener('click', externalLinksHandler, true);
+        window.gchatCleanupFunctions.push(() => {
+          document.removeEventListener('click', externalLinksHandler, true);
+        });
       }
 
       // 다운로드 버튼 처리 추가
       function setupDownloadHandlers() {
-        // Google Chat의 다운로드 버튼을 감지하고 처리
-        document.addEventListener('click', function(e) {
+        // 기존 리스너 제거 후 새로 등록
+        const downloadHandler = function(e) {
           const target = e.target;
           console.log('클릭된 요소:', target);
 
@@ -415,14 +451,24 @@ function createWindow() {
               }
             }
           }
-        }, true);
+        };
+
+        document.addEventListener('click', downloadHandler, true);
+        window.gchatCleanupFunctions.push(() => {
+          document.removeEventListener('click', downloadHandler, true);
+        });
       }
 
       // 우클릭 이벤트 허용 (Google Chat 우클릭 메뉴 활성화)
-      document.addEventListener('contextmenu', function(event) {
+      const contextMenuHandler = function(event) {
         // Google Chat의 기본 우클릭 동작 허용
         event.stopImmediatePropagation();
-      }, true);
+      };
+
+      document.addEventListener('contextmenu', contextMenuHandler, true);
+      window.gchatCleanupFunctions.push(() => {
+        document.removeEventListener('contextmenu', contextMenuHandler, true);
+      });
 
       // requestIdleCallback를 사용한 CPU 사용량 최적화 (필수 이벤트는 유지)
       if ('requestIdleCallback' in window) {
@@ -452,10 +498,35 @@ function createWindow() {
     mainWindow.webContents.executeJavaScript(jsCode);
   });
 
-  // 메모리 관리
-  mainWindow.on('closed', () => {
+  // 메모리 관리 및 정리 함수
+  const cleanupWindow = () => {
+    // Clear all timers associated with this window
+    timers.forEach(timer => {
+      clearTimeout(timer);
+    });
+    timers.clear();
+
+    // Clear all intervals associated with this window
+    intervals.forEach(interval => {
+      clearInterval(interval);
+    });
+    intervals.clear();
+
+    // Remove session event listeners
+    if (mainWindow && mainWindow.webContents && mainWindow.webContents.session) {
+      mainWindow.webContents.session.removeAllListeners('will-download');
+    }
+
+    // Remove all webContents event listeners
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.removeAllListeners();
+    }
+
+    // Clean up window reference
     mainWindow = null;
-  });
+  };
+
+  mainWindow.on('closed', cleanupWindow);
 
   mainWindow.on('close', event => {
     if (!app.isQuitting) {
@@ -552,16 +623,16 @@ function createMenu() {
         },
         ...(process.env.NODE_ENV === 'development'
           ? [
-              {
-                label: '개발자 도구',
-                accelerator: 'F12',
-                click: () => {
-                  if (mainWindow) {
-                    mainWindow.webContents.toggleDevTools();
-                  }
+            {
+              label: '개발자 도구',
+              accelerator: 'F12',
+              click: () => {
+                if (mainWindow) {
+                  mainWindow.webContents.toggleDevTools();
                 }
               }
-            ]
+            }
+          ]
           : []),
         {
           type: 'separator'
@@ -619,7 +690,7 @@ function createMenu() {
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
               detail:
-                'Version 1.0.4 (Production Ready)\nElectron 기반 Google Chat 데스크탑 앱\n\n보안 및 코드 품질 개선, 이미지 다운로드 기능, DevTools 제거 포함.'
+                'Version 1.0.5 (Security & Memory Fixes)\nElectron 기반 Google Chat 데스크탑 앱\n\n메모리 릭 수정, 보안 취약점 해결, 코드 품질 개선 포함.'
             });
           }
         }
@@ -657,6 +728,37 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
   app.isQuitting = true;
+
+  // 앱 종료 시 전역 정리
+  console.log('App quitting - performing global cleanup');
+
+  // 모든 타이머 정리
+  timers.forEach(timer => clearTimeout(timer));
+  timers.clear();
+
+  intervals.forEach(interval => clearInterval(interval));
+  intervals.clear();
+
+  // IPC 리스너 정리
+  ipcMain.removeAllListeners();
+
+  // 트레이 정리
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
+
+  // 모든 창 정리
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach(window => {
+    if (window && !window.isDestroyed()) {
+      window.removeAllListeners();
+      if (window.webContents) {
+        window.webContents.removeAllListeners();
+      }
+      window.close();
+    }
+  });
 });
 
 // 메모리 정리

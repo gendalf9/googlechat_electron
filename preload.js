@@ -63,19 +63,32 @@ function cleanupUnusedListeners() {
   });
 }
 
-// 페이지 제목 변경 감지 (새 메시지 알림 등) - CPU 최적화 버전
+// 페이지 제목 변경 감지 (새 메시지 알림 등) - 메모리 릭 방지 버전
 let titleObserver = null;
 let lastTitle = '';
 let titleCheckInterval = null;
+let titleNotificationTimeout = null;
 
 function setupTitleObserver() {
-  // 더 긴 간격으로 확인하여 CPU 부하 최소화
-  if (titleCheckInterval) {
-    clearInterval(titleCheckInterval);
+  // 기존 관찰자 정리
+  if (titleObserver) {
+    titleObserver.disconnect();
+    titleObserver = null;
   }
 
-  // 10초마다 한 번만 확인하여 CPU 부하 최소화
-  titleCheckInterval = setInterval(() => {
+  // 기존 타이머 정리
+  if (titleCheckInterval) {
+    clearInterval(titleCheckInterval);
+    titleCheckInterval = null;
+  }
+
+  if (titleNotificationTimeout) {
+    clearTimeout(titleNotificationTimeout);
+    titleNotificationTimeout = null;
+  }
+
+  // MutationObserver를 사용한 더 효율적인 제목 변경 감지
+  titleObserver = new MutationObserver(_mutations => {
     try {
       const currentTitle = document.title;
       if (currentTitle !== lastTitle) {
@@ -88,11 +101,11 @@ function setupTitleObserver() {
           currentTitle !== 'Google Chat Desktop'
         ) {
           // 디바운싱 적용 (너무 많은 알림 방지)
-          if (window.titleNotificationTimeout) {
-            clearTimeout(window.titleNotificationTimeout);
+          if (titleNotificationTimeout) {
+            clearTimeout(titleNotificationTimeout);
           }
 
-          window.titleNotificationTimeout = setTimeout(() => {
+          titleNotificationTimeout = setTimeout(() => {
             if (window.electronAPI) {
               window.electronAPI.showNotification('Google Chat', '새 메시지');
             }
@@ -100,9 +113,43 @@ function setupTitleObserver() {
         }
       }
     } catch (error) {
-      // 에러 무시 (CPU 절약)
+      // 에러 무시
     }
-  }, 10000); // 10초마다 확인
+  });
+
+  // title 요소 관찰 시작
+  const titleElement = document.querySelector('title');
+  if (titleElement) {
+    titleObserver.observe(titleElement, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  } else {
+    // fallback: title 요소가 없을 경우 MutationObserver로 document.head 관찰
+    titleObserver.observe(document.head, {
+      childList: true,
+      subtree: true
+    });
+  }
+}
+
+// 정리 함수
+function cleanupTitleObserver() {
+  if (titleObserver) {
+    titleObserver.disconnect();
+    titleObserver = null;
+  }
+
+  if (titleCheckInterval) {
+    clearInterval(titleCheckInterval);
+    titleCheckInterval = null;
+  }
+
+  if (titleNotificationTimeout) {
+    clearTimeout(titleNotificationTimeout);
+    titleNotificationTimeout = null;
+  }
 }
 
 // 페이지 로드 완료 후 관찰자 설정
@@ -112,10 +159,7 @@ window.addEventListener('load', () => {
 
 // 언로드 시 정리
 window.addEventListener('beforeunload', () => {
-  if (titleCheckInterval) {
-    clearInterval(titleCheckInterval);
-    titleCheckInterval = null;
-  }
+  cleanupTitleObserver();
 });
 
 // 최적화된 키보드 이벤트 핸들링
@@ -161,8 +205,8 @@ const keyboardHandler = e => {
 // 이벤트 위임을 사용한 효율적인 이벤트 핸들링
 document.addEventListener('keydown', keyboardHandler, { passive: false });
 
-// 에러 핸들링 최적화
-window.addEventListener('error', e => {
+// 에러 핸들링 최적화 (메모리 릭 방지)
+const errorHandler = e => {
   // 반복적인 에러 로깅 방지
   if (!window.errorLog) {
     window.errorLog = new Set();
@@ -173,36 +217,40 @@ window.addEventListener('error', e => {
     window.errorLog.add(errorKey);
     console.error('Page error:', e.error);
 
-    // 메모리 정리
-    if (window.errorLog.size > 100) {
+    // 메모리 정리 - 더 작은 크기로 유지
+    if (window.errorLog.size > 50) {
+      // 100에서 50으로 감소
       window.errorLog.clear();
     }
   }
-});
+};
 
-// 언로드 시 정리
-window.addEventListener('beforeunload', () => {
-  console.log('Page unloading - cleaning up');
+window.addEventListener('error', errorHandler);
 
-  // 관찰자 정리
-  if (titleObserver) {
-    titleObserver.disconnect();
-    titleObserver = null;
+// 언로드 시 정리 함수 (통합 정리)
+const cleanupEverything = () => {
+  console.log('Page unloading - performing comprehensive cleanup');
+
+  // 제목 관찰자 정리
+  cleanupTitleObserver();
+
+  // 에러 로그 정리
+  if (window.errorLog) {
+    window.errorLog.clear();
+    window.errorLog = null;
   }
-
-  // 타이머 정리
-  if (window.titleNotificationTimeout) {
-    clearTimeout(window.titleNotificationTimeout);
-  }
-
-  // 이벤트 리스너 정리
-  document.removeEventListener('keydown', keyboardHandler);
 
   // 성능 측정 정리
   if (window.performance && window.performance.clearMarks) {
     window.performance.clearMarks();
     window.performance.clearMeasures();
   }
-});
+
+  // 이벤트 리스너 정리
+  window.removeEventListener('error', errorHandler);
+  document.removeEventListener('keydown', keyboardHandler);
+};
+
+window.addEventListener('beforeunload', cleanupEverything);
 
 // 성능 모니터링 기능 제거 (CPU 사용량 감소)
