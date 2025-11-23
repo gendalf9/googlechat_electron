@@ -15,21 +15,25 @@ tests/
 ## Running Tests
 
 ### All Tests
+
 ```bash
 npm test
 ```
 
 ### Watch Mode (for development)
+
 ```bash
 npm run test:watch
 ```
 
 ### Test Coverage
+
 ```bash
 npm run test:coverage
 ```
 
 ### Specific Test Categories
+
 ```bash
 # Unit tests only
 npm run test:unit
@@ -46,6 +50,7 @@ npm run test:performance
 ### 1. Unit Tests
 
 #### Main Process Tests (`main.test.js`)
+
 - ✅ Application startup configuration
 - ✅ Window creation and management
 - ✅ IPC communication setup
@@ -54,6 +59,7 @@ npm run test:performance
 - ✅ Menu and shortcut setup
 
 #### Preload Script Tests (`preload.test.js`)
+
 - ✅ electronAPI exposure
 - ✅ IPC communication methods
 - ✅ DOM event listeners
@@ -63,6 +69,7 @@ npm run test:performance
 ### 2. Integration Tests
 
 #### Application Integration Tests (`integration.test.js`)
+
 - ✅ Application startup
 - ✅ Google Chat URL loading
 - ✅ Window management (minimize, restore, hide, show)
@@ -75,6 +82,7 @@ npm run test:performance
 ### 3. Performance Tests
 
 #### Performance Tests (`performance.test.js`)
+
 - ✅ Memory usage optimization
 - ✅ CPU efficiency
 - ✅ GPU resource management
@@ -87,23 +95,27 @@ npm run test:performance
 The test suite covers:
 
 ### Core Functionality (95%+ coverage)
+
 - Main process initialization
 - Window management
 - IPC communication
 - External link handling
 
 ### User Interface (90%+ coverage)
+
 - Right-click functionality
 - Keyboard shortcuts
 - Input interactions
 
 ### Performance (85%+ coverage)
+
 - Resource usage optimization
 - Memory management
 - CPU efficiency
 - Network handling
 
 ### Security (100% coverage)
+
 - Context isolation
 - Sandboxing
 - Secure IPC communication
@@ -118,6 +130,7 @@ The test suite covers:
 4. Write test cases using Jest syntax
 
 Example:
+
 ```javascript
 const { app, BrowserWindow } = require('electron');
 
@@ -137,6 +150,7 @@ describe('New Feature', () => {
 4. Verify application behavior
 
 Example:
+
 ```javascript
 const { Application } = require('spectron');
 
@@ -187,6 +201,7 @@ jest.mock('electron', () => ({
 ### Test Configuration
 
 Tests run in Node.js environment with:
+
 - Jest test framework
 - Mocked Electron APIs
 - Simulated DOM environment
@@ -215,16 +230,19 @@ jobs:
 ## Debugging Tests
 
 ### Running Tests in Debug Mode
+
 ```bash
 node --inspect-brk node_modules/.bin/jest tests/main.test.js
 ```
 
 ### Verbose Output
+
 ```bash
 npm test -- --verbose
 ```
 
 ### Individual Test File
+
 ```bash
 npx jest tests/main.test.js --verbose
 ```
@@ -232,16 +250,19 @@ npx jest tests/main.test.js --verbose
 ## Performance Benchmarks
 
 ### Memory Usage Tests
+
 - Monitor JavaScript heap size
 - Check for memory leaks
 - Verify cleanup on window close
 
 ### CPU Usage Tests
+
 - Measure CPU consumption
 - Verify optimization effectiveness
 - Test background processing
 
 ### Network Tests
+
 - Validate external link handling
 - Check resource loading efficiency
 - Test navigation blocking
@@ -273,17 +294,20 @@ npx jest tests/main.test.js --verbose
 ## Best Practices
 
 ### Test Organization
+
 - Group related tests in describe blocks
 - Use descriptive test names
 - Keep tests independent and isolated
 - Mock external dependencies
 
 ### Test Data
+
 - Use consistent test data
 - Clean up test data after each test
 - Avoid hard-coded values when possible
 
 ### Performance Testing
+
 - Run performance tests in isolation
 - Monitor system resources during tests
 - Establish performance baselines
@@ -293,16 +317,19 @@ npx jest tests/main.test.js --verbose
 Before submitting changes:
 
 1. Run all tests:
+
    ```bash
    npm test
    ```
 
 2. Check coverage:
+
    ```bash
    npm run test:coverage
    ```
 
 3. Run specific tests related to your changes:
+
    ```bash
    npm run test:unit
    npm run test:integration
@@ -317,6 +344,7 @@ Before submitting changes:
 ## Test Results Interpretation
 
 ### Successful Test Output
+
 ```
 PASS tests/main.test.js
 ✅ Creates window with correct configuration (5ms)
@@ -325,6 +353,7 @@ PASS tests/main.test.js
 ```
 
 ### Failed Test Example
+
 ```
 FAIL tests/integration.test.js
 ❌ Application launches successfully (30000ms)
@@ -332,6 +361,7 @@ FAIL tests/integration.test.js
 ```
 
 ### Coverage Report
+
 ```
 ----------------------|---------|----------|---------|---------|-------------------
 File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s

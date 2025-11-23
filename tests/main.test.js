@@ -13,7 +13,7 @@ describe('Main Process Tests', () => {
       const mainContent = fs.readFileSync(mainPath, 'utf8');
 
       // Check for essential Electron imports
-      expect(mainContent).toContain('require(\'electron\')');
+      expect(mainContent).toContain("require('electron')");
       expect(mainContent).toContain('app');
       expect(mainContent).toContain('BrowserWindow');
 
@@ -70,7 +70,7 @@ describe('Main Process Tests', () => {
       const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
 
       // Check for window lifecycle management
-      expect(mainContent).toContain('on(\'closed\'');
+      expect(mainContent).toContain("on('closed'");
       expect(mainContent).toContain('hide');
       expect(mainContent).toContain('quit');
     }).not.toThrow();

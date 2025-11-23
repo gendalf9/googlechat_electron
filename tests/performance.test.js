@@ -270,11 +270,7 @@ describe('Performance Tests', () => {
       expect(app.on).toBeDefined();
 
       // Mock startup sequence
-      const startupPromises = [
-        Promise.resolve(),
-        Promise.resolve(),
-        Promise.resolve()
-      ];
+      const startupPromises = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
 
       return Promise.all(startupPromises).then(() => {
         expect(true).toBe(true); // All startup steps completed

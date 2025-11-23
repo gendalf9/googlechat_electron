@@ -63,12 +63,7 @@ describe('Application Integration Tests', () => {
 
   test('all required files are present', () => {
     // Verify all essential files exist
-    const requiredFiles = [
-      '../main.js',
-      '../preload.js',
-      '../index.html',
-      '../package.json'
-    ];
+    const requiredFiles = ['../main.js', '../preload.js', '../index.html', '../package.json'];
 
     requiredFiles.forEach(file => {
       const filePath = path.join(__dirname, file);

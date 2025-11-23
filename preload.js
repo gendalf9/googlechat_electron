@@ -22,10 +22,30 @@ contextBridge.exposeInMainWorld('electronAPI', {
     if (window.performance && window.performance.memory) {
       return {
         memory: window.performance.memory,
-        timing: window.performance.timing
+        timing: window.performance.timing,
+        timestamp: Date.now()
       };
     }
     return null;
+  },
+
+  // 메모리 정리 요청
+  requestMemoryCleanup: () => {
+    // 가비지 컬렉션 요청
+    if (window.gc) {
+      window.gc();
+    }
+
+    // DOM 정리
+    const unusedElements = document.querySelectorAll('.unused-element');
+    unusedElements.forEach(element => {
+      element.remove();
+    });
+
+    return {
+      cleaned: unusedElements.length,
+      timestamp: Date.now()
+    };
   }
 });
 

@@ -58,14 +58,14 @@ npm run pack
 
 ## Keyboard Shortcuts
 
-| Shortcut               | Function                                |
-| ---------------------- | --------------------------------------- |
-| `Cmd/Ctrl + R`        | Refresh page                            |
-| `Cmd/Ctrl + Shift + R` | Hard refresh                             |
-| `Cmd/Ctrl + N`        | New chat                                |
-| `Cmd/Ctrl + W`        | Hide window (doesn't quit the app)      |
-| `F12`                  | Toggle developer tools                  |
-| `Cmd/Ctrl + Q`        | Quit application                        |
+| Shortcut               | Function                           |
+| ---------------------- | ---------------------------------- |
+| `Cmd/Ctrl + R`         | Refresh page                       |
+| `Cmd/Ctrl + Shift + R` | Hard refresh                       |
+| `Cmd/Ctrl + N`         | New chat                           |
+| `Cmd/Ctrl + W`         | Hide window (doesn't quit the app) |
+| `F12`                  | Toggle developer tools             |
+| `Cmd/Ctrl + Q`         | Quit application                   |
 
 ## Right-Click Context Menu
 
@@ -101,6 +101,7 @@ gchat_electron/
 ## Architecture
 
 ### Main Process (main.js)
+
 - Window creation and management
 - System tray implementation
 - Menu and shortcut configuration
@@ -108,12 +109,14 @@ gchat_electron/
 - Performance optimizations
 
 ### Preload Script (preload.js)
+
 - Secure IPC bridge between main and renderer processes
 - Google Chat page loading detection
 - Keyboard event handling
 - Performance monitoring
 
 ### Renderer (index.html)
+
 - Google Chat web app loading via BrowserWindow
 - Loading screen and error handling
 - New message notification detection
@@ -121,6 +124,7 @@ gchat_electron/
 ## Security
 
 This application follows Electron security best practices:
+
 - Context isolation enabled
 - Node integration disabled in renderer
 - Secure IPC communication via contextBridge
@@ -133,6 +137,7 @@ This application follows Electron security best practices:
 Automatically opens in development mode (`npm run dev`).
 
 ### Logging
+
 - Main process logs: View in terminal
 - Renderer process logs: View in developer tools console
 
@@ -149,12 +154,14 @@ Built files are generated in the `dist/` directory:
 This project uses GitHub Actions for automated builds, testing, and releases:
 
 ### Workflow Triggers
+
 - **Push to main/develop**: Full build and test suite
 - **Pull requests**: Build verification and code quality checks
-- **Tags (v*)**: Create official releases with downloadable assets
+- **Tags (v\*)**: Create official releases with downloadable assets
 - **Manual dispatch**: On-demand builds
 
 ### CI/CD Pipeline
+
 1. **Test Suite**: Jest unit and integration tests with coverage reporting
 2. **Multi-platform Build**: Windows, macOS, and Linux packaging
 3. **Code Quality**: ESLint, Prettier formatting checks
@@ -162,11 +169,13 @@ This project uses GitHub Actions for automated builds, testing, and releases:
 5. **Release**: Automatic GitHub release with platform-specific binaries
 
 ### Build Artifacts
+
 - **Windows**: `.exe` installer and `.msi` package
 - **macOS**: `.dmg` disk image with Universal Binary support
 - **Linux**: `.AppImage`, `.deb`, and `.rpm` packages
 
 ### Code Quality Standards
+
 - ESLint for JavaScript code linting
 - Prettier for consistent code formatting
 - Jest for comprehensive testing coverage
@@ -182,6 +191,7 @@ This project uses GitHub Actions for automated builds, testing, and releases:
 6. Open a Pull Request
 
 ### Development Guidelines
+
 - Follow ESLint rules and Prettier formatting
 - Write tests for new features
 - Ensure all tests pass before submitting PRs

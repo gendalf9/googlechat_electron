@@ -13,7 +13,7 @@ describe('Preload Script Tests', () => {
       const preloadContent = fs.readFileSync(preloadPath, 'utf8');
 
       // Check for essential Electron imports
-      expect(preloadContent).toContain('require(\'electron\')');
+      expect(preloadContent).toContain("require('electron')");
       expect(preloadContent).toContain('contextBridge');
       expect(preloadContent).toContain('ipcRenderer');
 

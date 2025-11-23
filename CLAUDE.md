@@ -27,6 +27,7 @@ npm install                 # Install dependencies
 ## Application Architecture
 
 ### Core Files Structure
+
 - **main.js** - Main Electron process handling window management, system tray, menus, and native OS integration
 - **preload.js** - Preload script providing secure IPC bridge between main and renderer processes
 - **index.html** - Loading screen and fallback UI (Google Chat is loaded directly in main.js via BrowserWindow)
@@ -36,17 +37,20 @@ npm install                 # Install dependencies
 ### Key Architecture Patterns
 
 **Security-First Design:**
+
 - Uses `contextIsolation: true` and `nodeIntegration: false`
 - Implements secure IPC communication via `contextBridge`
 - Sandboxed renderer process for security
 
 **Performance Optimizations:**
+
 - Memory management with cleanup routines
 - Performance monitoring in development mode
 - Optimized event handling with debouncing
 - GPU acceleration for UI elements
 
 **Cross-Platform Support:**
+
 - Platform-specific keyboard shortcuts (Cmd/Ctrl)
 - Native system tray integration
 - Build configurations for macOS, Windows, and Linux
@@ -54,16 +58,19 @@ npm install                 # Install dependencies
 ### Key Features Implementation
 
 **Window Management:**
+
 - Close behavior: Hides window to system tray instead of quitting
 - System tray toggle functionality
 - Custom user agent for Google Chat compatibility
 
 **Notifications:**
+
 - Title change detection for new message alerts
 - Debounced notification system to prevent spam
 - Native OS notification integration
 
 **Keyboard Shortcuts:**
+
 - `Cmd/Ctrl + R`: Page refresh
 - `Cmd/Ctrl + Shift + R`: Hard refresh
 - `Cmd/Ctrl + W`: Hide window (not quit)
@@ -82,6 +89,7 @@ npm install                 # Install dependencies
 ## Build Configuration
 
 Uses electron-builder with platform-specific settings:
+
 - **macOS**: DMG installer with multi-architecture support (x64, arm64)
 - **Windows**: NSIS installer with desktop shortcuts
 - **Linux**: AppImage and DEB packages

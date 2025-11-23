@@ -5,19 +5,17 @@ module.exports = {
     node: true,
     jest: true
   },
-  extends: [
-    'eslint:recommended'
-  ],
+  extends: ['eslint:recommended'],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module'
   },
   rules: {
-    'indent': ['error', 2],
+    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
-    'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+    quotes: ['error', 'single'],
+    semi: ['error', 'always'],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'no-console': 'warn',
     'no-debugger': 'error',
     'prefer-const': 'error',
@@ -38,12 +36,12 @@ module.exports = {
     'padded-blocks': ['error', 'never']
   },
   globals: {
-    'electron': 'readonly',
-    'BrowserWindow': 'readonly',
-    'ipcMain': 'readonly',
-    'app': 'readonly',
-    'shell': 'readonly',
-    'contextBridge': 'readonly',
-    'ipcRenderer': 'readonly'
+    electron: 'readonly',
+    BrowserWindow: 'readonly',
+    ipcMain: 'readonly',
+    app: 'readonly',
+    shell: 'readonly',
+    contextBridge: 'readonly',
+    ipcRenderer: 'readonly'
   }
 };

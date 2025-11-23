@@ -19,7 +19,7 @@ const localStorageMock = (() => {
     key: jest.fn(),
     length: 0,
     __STORE__: store,
-    __setStore__: (newStore) => {
+    __setStore__: newStore => {
       store = newStore;
       Object.keys(newStore).forEach(key => {
         localStorageMock.length = Object.keys(newStore).length;
