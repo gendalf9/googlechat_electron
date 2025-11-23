@@ -549,17 +549,17 @@ function createMenu() {
         },
         ...(process.env.NODE_ENV === 'development'
           ? [
-              {
-                label: '개발자 도구',
-                accelerator: 'F12',
-                click: () => {
-                  const win = getWindow();
-                  if (win) {
-                    win.webContents.toggleDevTools();
-                  }
+            {
+              label: '개발자 도구',
+              accelerator: 'F12',
+              click: () => {
+                const win = getWindow();
+                if (win) {
+                  win.webContents.toggleDevTools();
                 }
               }
-            ]
+            }
+          ]
           : []),
         {
           type: 'separator'
