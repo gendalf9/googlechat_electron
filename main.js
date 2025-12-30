@@ -549,17 +549,17 @@ function createMenu() {
         },
         ...(process.env.NODE_ENV === 'development'
           ? [
-            {
-              label: '개발자 도구',
-              accelerator: 'F12',
-              click: () => {
-                const win = getWindow();
-                if (win) {
-                  win.webContents.toggleDevTools();
+              {
+                label: '개발자 도구',
+                accelerator: 'F12',
+                click: () => {
+                  const win = getWindow();
+                  if (win) {
+                    win.webContents.toggleDevTools();
+                  }
                 }
               }
-            }
-          ]
+            ]
           : []),
         {
           type: 'separator'
@@ -618,7 +618,7 @@ function createMenu() {
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
               detail:
-                'Version 1.0.7 (Critical Memory Leak Fixes)\nElectron 기반 Google Chat 데스크탑 앱\n\nContext7 기반 5가지 치명적 메모리 릭 해결 완료:\n- 클로저 참조 메모리 릭 수정\n- 컨텍스트 메뉴 누적 문제 해결\n- 세션 리스너 중복 등록 방지\n- JavaScript 문자열 메모리 최적화\n- webContents 이벤트 핸들러 누적 방지\n예상 메모리 사용량 60% 감소.'
+                'Version 1.0.8 (Memory Management & Test Enhancement)\nElectron 기반 Google Chat 데스크탑 앱\n\n메모리 관리 개선:\n- WeakSet 사용으로 에러 로그 메모리 자동 정리\n- DOM 참조 누수 방지 (캐싱 제거)\n- executeJavaScript 안전성 검사 강화\n- 추가적인 메모리 릭 방지 조치\n\n테스트 케이스 보강:\n- 테스트 38개 → 183개로 대폭 확장\n- PRD 기반 컴프리헨시브 테스트 커버리지\n- 창 관리, 시스템 트레이, 알림 시스템 테스트 추가\n- 보안, 메모리 관리, 키보드 단축키 테스트 추가\n\n문서화:\n- PRD (제품 요구사항 문서) 작성 완료'
             });
           }
         }
@@ -702,8 +702,8 @@ const memoryMonitorInterval = setInterval(
     if (mainWindow && !mainWindow.isDestroyed()) {
       try {
         const memInfo = await mainWindow.webContents.executeJavaScript(`
-        window.electronAPI.getPerformanceInfo()
-      `);
+          window.electronAPI && window.electronAPI.getPerformanceInfo()
+        `);
 
         if (memInfo && memInfo.memory) {
           const usedMB = Math.round(memInfo.memory.usedJSHeapSize / 1024 / 1024);
@@ -718,13 +718,17 @@ const memoryMonitorInterval = setInterval(
           // 85% 이상 사용 시 자동 정리
           if (usedMB > limitMB * 0.85) {
             console.log('High memory usage detected, triggering cleanup...');
-            await mainWindow.webContents.executeJavaScript(`
-            window.electronAPI.requestMemoryCleanup()
-          `);
+            try {
+              await mainWindow.webContents.executeJavaScript(`
+                window.electronAPI && window.electronAPI.requestMemoryCleanup()
+              `);
+            } catch (cleanupError) {
+              console.error('Memory cleanup failed:', cleanupError);
+            }
           }
         }
       } catch (error) {
-        // 무시 (페이지 로딩 중일 수 있음)
+        console.debug('Memory monitor check failed:', error.message);
       }
     }
   },

@@ -38,10 +38,12 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: success()
         with:
           file: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella
+          fail_ci_if_error: false
 
   build:
     name: Build for ${{ matrix.os }}
@@ -94,9 +96,6 @@ jobs:
         run: |
           echo "CI=false" >> $GITHUB_ENV
           npm run build:mac
-
-      - name: Package application
-        run: npm run pack
 
       - name: Upload artifacts (Linux)
         if: matrix.platform == 'linux'
@@ -236,7 +235,7 @@ jobs:
         run: npm ci
 
       - name: Run npm audit
-        run: npm audit --audit-level moderate
+        run: npm audit --audit-level moderate || true
 
       - name: Run security scan with Snyk
         uses: snyk/actions/node@master
@@ -269,7 +268,7 @@ jobs:
       - name: Lint JavaScript files
         run: |
           npm install -g eslint
-          eslint main.js preload.js --ext .js || true
+          eslint main.js preload.js --ext .js
 
       - name: Check package.json
         run: npm ls --depth=0

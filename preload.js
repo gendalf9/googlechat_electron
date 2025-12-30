@@ -209,14 +209,11 @@ const keyboardHandler = e => {
   // Cmd/Ctrl + N: 새 채팅
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
     e.preventDefault();
-    // 캐싱된 선택자 사용
-    if (!window.newChatButton) {
-      window.newChatButton = document.querySelector(
-        '[aria-label*="새 채팅"], [aria-label*="New chat"], [data-tooltip*="새 채팅"], [data-tooltip*="New chat"]'
-      );
-    }
-    if (window.newChatButton) {
-      window.newChatButton.click();
+    const newChatButton = document.querySelector(
+      '[aria-label*="새 채팅"], [aria-label*="New chat"], [data-tooltip*="새 채팅"], [data-tooltip*="New chat"]'
+    );
+    if (newChatButton) {
+      newChatButton.click();
     }
     return;
   }
@@ -226,22 +223,12 @@ const keyboardHandler = e => {
 document.addEventListener('keydown', keyboardHandler, { passive: false });
 
 // 에러 핸들링 최적화 (메모리 릭 방지)
+let errorLog = new WeakSet();
+
 const errorHandler = e => {
-  // 반복적인 에러 로깅 방지
-  if (!window.errorLog) {
-    window.errorLog = new Set();
-  }
-
-  const errorKey = `${e.filename}:${e.lineno}:${e.message}`;
-  if (!window.errorLog.has(errorKey)) {
-    window.errorLog.add(errorKey);
+  if (!errorLog.has(e.error)) {
+    errorLog.add(e.error);
     console.error('Page error:', e.error);
-
-    // 메모리 정리 - 더 작은 크기로 유지
-    if (window.errorLog.size > 50) {
-      // 100에서 50으로 감소
-      window.errorLog.clear();
-    }
   }
 };
 
@@ -255,10 +242,7 @@ const cleanupEverything = () => {
   cleanupTitleObserver();
 
   // 에러 로그 정리
-  if (window.errorLog) {
-    window.errorLog.clear();
-    window.errorLog = null;
-  }
+  errorLog = null;
 
   // 성능 측정 정리
   if (window.performance && window.performance.clearMarks) {

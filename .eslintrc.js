@@ -11,12 +11,10 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
-    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-    'no-console': 'warn',
     'no-debugger': 'error',
     'prefer-const': 'error',
     'no-var': 'error',

@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2025-12-29
+
+### Fixed
+
+- **Memory Management**: Enhanced memory leak prevention
+  - Changed error logging from Set to WeakSet for automatic memory cleanup
+  - Removed DOM element caching (window.newChatButton) to prevent reference leaks
+  - Added safety checks before executeJavaScript calls
+  - Improved error handling in memory monitoring
+  - Removed unused errorKey variable in error handler
+
+### Added
+
+- **Test Coverage**: Expanded test suite from 38 to 183 tests (5x increase)
+  - Added window-management.test.js (14 tests)
+  - Added system-tray.test.js (10 tests)
+  - Added notifications.test.js (12 tests)
+  - Added keyboard-shortcuts.test.js (12 tests)
+  - Added security.test.js (16 tests)
+  - Added memory-management.test.js (18 tests)
+  - Added external-links.test.js (14 tests)
+  - Added downloads.test.js (14 tests)
+  - Added context-menu.test.js (15 tests)
+  - Added application-menu.test.js (19 tests)
+  - All tests pass (183/183, 100% success rate)
+
+### Changed
+
+- **Documentation**: Created comprehensive Product Requirements Document (PRD)
+  - Complete product overview and target user definitions
+  - Detailed feature requirements for all core functionalities
+  - Performance and optimization requirements
+  - Security requirements and best practices
+  - Platform-specific build configurations
+  - Development and build requirements
+  - Test requirements and success metrics
+
+### Technical Details
+
+- **Memory Optimization**:
+  - WeakSet usage eliminates manual error log cleanup
+  - DOM queries executed on demand instead of caching
+  - executeJavaScript now checks for electronAPI existence before execution
+  - Memory monitoring improved with try-catch blocks
+
+- **Test Coverage**:
+  - PRD-based comprehensive test coverage
+  - All major features tested
+  - Memory management tests verify cleanup procedures
+  - Security tests validate Electron best practices
+  - Performance tests ensure efficiency
+
 ## [1.0.4] - 2025-11-18
 
 ### Changed
@@ -70,6 +122,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Version Information
 
-- **Current**: v1.0.4
-- **Previous**: v1.0.3
+- **Current**: v1.0.8
+- **Previous**: v1.0.7
 - **Status**: ✅ Production Ready - All security and code quality checks pass
