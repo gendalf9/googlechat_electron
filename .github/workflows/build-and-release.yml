@@ -267,8 +267,7 @@ jobs:
 
       - name: Lint JavaScript files
         run: |
-          npm install -g eslint
-          eslint main.js preload.js --ext .js
+          npm run lint
 
       - name: Check package.json
         run: npm ls --depth=0
