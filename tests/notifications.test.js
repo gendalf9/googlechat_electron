@@ -3,7 +3,7 @@ const path = require('path');
 describe('Notification System Tests', () => {
   test('notification function exists', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('showNotification');
     expect(mainContent).toContain('new Notification');
@@ -11,7 +11,7 @@ describe('Notification System Tests', () => {
 
   test('notification has title and body', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('title');
     expect(mainContent).toContain('body');
@@ -19,7 +19,7 @@ describe('Notification System Tests', () => {
 
   test('notification has icon', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('icon');
     expect(mainContent).toContain('assets/icon.png');
@@ -27,7 +27,7 @@ describe('Notification System Tests', () => {
 
   test('new message notification uses MutationObserver', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('MutationObserver');
     expect(preloadContent).toContain('titleObserver');
@@ -36,7 +36,7 @@ describe('Notification System Tests', () => {
 
   test('title change detection is debounced', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('setTimeout');
     expect(preloadContent).toContain('titleNotificationTimeout');
@@ -45,7 +45,7 @@ describe('Notification System Tests', () => {
 
   test('notification detects new messages', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('currentTitle !== lastTitle');
     expect(preloadContent).toContain("'Google Chat'");
@@ -53,7 +53,7 @@ describe('Notification System Tests', () => {
 
   test('title observer is cleaned up on unload', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('cleanupTitleObserver');
     expect(preloadContent).toContain('titleObserver.disconnect()');
@@ -62,7 +62,7 @@ describe('Notification System Tests', () => {
 
   test('download completion notification is implemented', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('다운로드 완료');
     expect(mainContent).toContain("state === 'completed'");
@@ -70,7 +70,7 @@ describe('Notification System Tests', () => {
 
   test('download failure notification is implemented', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('다운로드 실패');
     expect(mainContent).toContain("state === 'completed'");
@@ -78,14 +78,14 @@ describe('Notification System Tests', () => {
 
   test('notification API is exposed via IPC', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("ipcMain.on('show-notification'");
   });
 
   test('notification test in tray menu works', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain(
       "showNotification('테스트', '알림 기능이 정상적으로 작동합니다.')"
@@ -94,7 +94,7 @@ describe('Notification System Tests', () => {
 
   test('multiple title changes are handled correctly', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('lastTitle');
     expect(preloadContent).toContain('clearTimeout');

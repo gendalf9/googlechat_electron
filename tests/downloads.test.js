@@ -3,7 +3,7 @@ const path = require('path');
 describe('File Download Tests', () => {
   test('download handler is implemented', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('will-download');
     expect(mainContent).toContain('downloadHandler');
@@ -11,7 +11,7 @@ describe('File Download Tests', () => {
 
   test('download files go to default downloads folder', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("getPath('downloads')");
     expect(mainContent).toContain('item.setSavePath');
@@ -19,7 +19,7 @@ describe('File Download Tests', () => {
 
   test('Korean filenames are decoded correctly', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('decodeURIComponent');
     expect(mainContent).toContain('fileName');
@@ -27,7 +27,7 @@ describe('File Download Tests', () => {
 
   test('download completion is notified', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('item.once');
     expect(mainContent).toContain('done');
@@ -36,7 +36,7 @@ describe('File Download Tests', () => {
 
   test('download completion notification shows filename', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('다운로드 완료');
     expect(mainContent).toContain('fileName');
@@ -44,7 +44,7 @@ describe('File Download Tests', () => {
 
   test('download failure is notified', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('다운로드 실패');
     expect(mainContent).toContain('else');
@@ -52,7 +52,7 @@ describe('File Download Tests', () => {
 
   test('download folder open option is provided on macOS', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("process.platform === 'darwin'");
     expect(mainContent).toContain('showMessageBox');
@@ -61,22 +61,22 @@ describe('File Download Tests', () => {
 
   test('download handler prevents duplicate listeners', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('downloadHandlerSetup');
-    expect(mainContent).toContain('if (downloadHandlerSetup)');
+    expect(mainContent).toContain('if (mainWindow._downloadHandlerSetup)');
   });
 
   test('existing will-download listeners are removed', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("removeAllListeners('will-download'");
   });
 
   test('download handler is tracked for cleanup', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('_downloadHandler');
     expect(mainContent).toContain('_downloadHandler = downloadHandler');
@@ -84,7 +84,7 @@ describe('File Download Tests', () => {
 
   test('download API is exposed via electronAPI', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('downloadFile');
     expect(preloadContent).toContain("ipcRenderer.send('download-file'");
@@ -92,15 +92,15 @@ describe('File Download Tests', () => {
 
   test('IPC handler for downloads exists', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("ipcMain.on('download-file'");
-    expect(mainContent).toContain('async (event, url, fileName)');
+    expect(mainContent).toContain('async (_event, url, fileName)');
   });
 
   test('Google Chat authenticated URLs are handled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('chat.google.com');
     expect(mainContent).toContain('get_attachment_url');
@@ -109,7 +109,7 @@ describe('File Download Tests', () => {
 
   test('download notification includes action message', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('다운로드를 브라우저에서 시작합니다');
     expect(mainContent).toContain('링크를 브라우저에서 엽니다');

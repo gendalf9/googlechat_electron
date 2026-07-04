@@ -52,6 +52,17 @@ Object.defineProperty(window, 'sessionStorage', {
 
 // Mock fetch
 global.fetch = jest.fn();
+// Refactor compat: tests read source via these helpers instead of deleted
+// root main.js/preload.js. Returns concatenated src/ module contents.
+const { readdirSync, readFileSync: _readFileSync } = require('fs');
+const sourceDir = (sub) => require('path').join(__dirname, '..', 'src', sub);
+const readSource = (sub) =>
+  readdirSync(sourceDir(sub))
+    .filter(f => f.endsWith('.js'))
+    .map(f => _readFileSync(require('path').join(sourceDir(sub), f), 'utf8'))
+    .join('\n');
+global.readMainSource = () => readSource('main');
+global.readPreloadSource = () => readSource('preload');
 
 // Mock console methods to reduce noise in tests
 const originalError = console.error;

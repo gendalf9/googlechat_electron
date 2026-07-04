@@ -1,8 +1,8 @@
 {
   "name": "gchat_electron",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Electron 기반 Google Chat 데스크탑 앱",
-  "main": "main.js",
+  "main": "src/main/index.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
@@ -18,10 +18,10 @@
     "test:integration": "jest tests/integration.test.js",
     "test:unit": "jest tests/main.test.js tests/preload.test.js",
     "test:performance": "jest tests/performance.test.js",
-    "lint": "eslint main.js preload.js --ext .js",
-    "lint:fix": "eslint main.js preload.js --ext .js --fix",
-    "format": "prettier --write \"main.js\" \"preload.js\" \"index.html\"",
-    "format:check": "prettier --check \"main.js\" \"preload.js\" \"index.html\"",
+    "lint": "eslint src/ --ext .js",
+    "lint:fix": "eslint src/ --ext .js --fix",
+    "format": "prettier --write \"src/**/*.js\" \"index.html\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"index.html\"",
     "quality": "npm run lint && npm run format:check && npm test"
   },
   "keywords": [
@@ -35,17 +35,15 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
-    "@tauri-apps/cli": "^2.9.4",
     "electron": "^39.2.0",
     "electron-builder": "^26.0.12",
     "eslint": "^8.57.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^30.2.0",
-    "js-yaml": "^4.1.1",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.2.5"
   },
   "overrides": {
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.1.2"
   },
   "build": {
     "appId": "com.gchat.desktop",
@@ -55,13 +53,12 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
-      "preload.js",
+      "src/**/*",
       "index.html",
       "assets/**/*"
     ],
     "extraMetadata": {
-      "main": "main.js"
+      "main": "src/main/index.js"
     },
     "mac": {
       "category": "public.app-category.social-networking",

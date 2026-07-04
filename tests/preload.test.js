@@ -7,10 +7,10 @@ describe('Preload Script Tests', () => {
   test('preload.js file exists and has basic structure', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadPath = path.join(__dirname, '../preload.js');
+      const preloadPath = path.join(__dirname, '../src/preload/index.js');
       expect(fs.existsSync(preloadPath)).toBe(true);
 
-      const preloadContent = fs.readFileSync(preloadPath, 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for essential Electron imports
       expect(preloadContent).toContain("require('electron')");
@@ -26,7 +26,7 @@ describe('Preload Script Tests', () => {
   test('preload.js includes necessary API functions', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for essential API functions
       expect(preloadContent).toContain('showNotification');
@@ -41,7 +41,7 @@ describe('Preload Script Tests', () => {
   test('preload.js has proper event listeners', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for event listeners
       expect(preloadContent).toContain('addEventListener');
@@ -53,7 +53,7 @@ describe('Preload Script Tests', () => {
   test('preload.js includes performance optimizations', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for performance-related code (updated for memory leak fixes)
       expect(preloadContent).toContain('MutationObserver');
@@ -65,7 +65,7 @@ describe('Preload Script Tests', () => {
   test('preload.js handles keyboard shortcuts', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for keyboard shortcut handling
       expect(preloadContent).toContain('metaKey');
@@ -77,7 +77,7 @@ describe('Preload Script Tests', () => {
   test('preload.js has proper error handling', () => {
     expect(() => {
       const fs = require('fs');
-      const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+      const preloadContent = readPreloadSource();
 
       // Check for error handling
       expect(preloadContent).toContain('try');

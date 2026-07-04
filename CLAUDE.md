@@ -28,10 +28,11 @@ npm install                 # Install dependencies
 
 ### Core Files Structure
 
-- **main.js** - Main Electron process handling window management, system tray, menus, and native OS integration
-- **preload.js** - Preload script providing secure IPC bridge between main and renderer processes
-- **index.html** - Loading screen and fallback UI (Google Chat is loaded directly in main.js via BrowserWindow)
-- **package.json** - Project configuration and electron-builder build settings
+- **src/main/index.js** - Entry point: app lifecycle, wiring, `showNotification`, process error handlers
+- **src/main/** - Main process modules: `window`, `tray`, `menu`, `navigation-guard` (2 predicates — do NOT unify), `context-menu`, `session-download-handler`, `optimization-injection`, `memory-monitor`, `ipc`, `constants`, `timers` (singleton registry)
+- **src/preload/index.js** - Preload entry exposing `electronAPI` (8 methods) via `contextBridge`; requires `title-observer`, `keyboard`, `error-handler`
+- **index.html** - Loading screen and fallback UI (Google Chat is loaded directly via BrowserWindow)
+- **package.json** - Project configuration and electron-builder build settings (main = `src/main/index.js`)
 - **assets/icon.png** - Application icon
 
 ### Key Architecture Patterns
