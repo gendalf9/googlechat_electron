@@ -1,12 +1,10 @@
-// IPC handlers — extracted from main.js:740-822.
+const { app, ipcMain, shell, Notification } = require('electron');
 // F2 (technical review): single file, not a subdirectory of micro-files.
 // registerIpc({ getMainWindow, showNotification }) wires all 6 channels.
 //
 // Channel names and signatures are UNCHANGED (API Surface Parity).
 // Asymmetry (m3): 4 channels are renderer→main sends; 2 (get-memory-info,
 // request-memory-cleanup) are main→renderer executeJavaScript round-trips.
-
-const { ipcMain, shell, Notification } = require('electron');
 
 function registerIpc({ getMainWindow, showNotification }) {
   ipcMain.on('show-notification', (_event, title, body) => {
@@ -80,6 +78,11 @@ function registerIpc({ getMainWindow, showNotification }) {
       }
     }
     return { error: 'No main window' };
+  });
+
+  // Sync version query (sendSync). Fixes preload getAppVersion '1.0.0' fallback.
+  ipcMain.on('get-app-version', event => {
+    event.returnValue = app.getVersion();
   });
 }
 

@@ -37,7 +37,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: success()
         with:
           file: ./coverage/lcov.info
@@ -102,10 +102,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}
-          path: |
             dist/*.AppImage
-            dist/*.deb
-            dist/*.rpm
           retention-days: 30
 
       - name: Upload artifacts (Windows)
@@ -147,11 +144,10 @@ jobs:
         run: ls -la artifacts/
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             artifacts/**/*.AppImage
-            artifacts/**/*.deb
             artifacts/**/*.exe
             artifacts/**/*.msi
             artifacts/**/*.dmg
@@ -175,8 +171,6 @@ jobs:
 
             #### Linux
             - `google-chat-desktop.AppImage`: AppImage (모든 리눅스 배포판)
-            - `google-chat-desktop.deb`: Debian/Ubuntu 패키지
-            - `google-chat-desktop.rpm`: RedHat/Fedora 패키지
 
             ### 기능
             - CPU 최적화된 Google Chat 데스크탑 앱
@@ -200,16 +194,6 @@ jobs:
             2. 실행 권한 추가: `chmod +x google-chat-desktop.AppImage`
             3. 실행: `./google-chat-desktop.AppImage`
 
-            #### Linux (Debian/Ubuntu)
-            ```bash
-            sudo dpkg -i google-chat-desktop.deb
-            sudo apt-get install -f  # 의존성 설치 (필요시)
-            ```
-
-            #### Linux (RedHat/Fedora)
-            ```bash
-            sudo rpm -i google-chat-desktop.rpm
-            ```
 
             ---
 
@@ -272,25 +256,3 @@ jobs:
       - name: Check package.json
         run: npm ls --depth=0
 
-  update-dependencies:
-    name: Check for outdated dependencies
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Check for outdated packages
-        run: |
-          npm outdated || true
-          echo "## Dependency Check Results" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          npm outdated >> $GITHUB_STEP_SUMMARY || true
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

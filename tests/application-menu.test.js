@@ -122,8 +122,8 @@ describe('Application Menu Tests', () => {
     const fs = require('fs');
     const mainContent = readMainSource();
 
-    expect(mainContent).toContain('Version 1.0.8');
-    expect(mainContent).toContain('메모리 관리');
+    expect(mainContent).toContain('app.getVersion()');
+    expect(mainContent).toContain('Google Chat Desktop');
   });
 
   test('menu is set as application menu', () => {

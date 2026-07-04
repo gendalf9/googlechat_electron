@@ -105,8 +105,7 @@ function createMenu() {
               type: 'info',
               title: 'Google Chat Desktop',
               message: 'Google Chat Desktop',
-              detail:
-                'Version 1.0.8 (Memory Management & Test Enhancement)\nElectron 기반 Google Chat 데스크탑 앱\n\n메모리 관리 개선:\n- WeakSet 사용으로 에러 로그 메모리 자동 정리\n- DOM 참조 누수 방지 (캐싱 제거)\n- executeJavaScript 안전성 검사 강화\n- 추가적인 메모리 릭 방지 조치\n\n테스트 케이스 보강:\n- 테스트 38개 → 183개로 대폭 확장\n- PRD 기반 컴프리헨시브 테스트 커버리지\n- 창 관리, 시스템 트레이, 알림 시스템 테스트 추가\n- 보안, 메모리 관리, 키보드 단축키 테스트 추가\n\n문서화:\n- PRD (제품 요구사항 문서) 작성 완료'
+              detail: `Version ${app.getVersion()}\nElectron 기반 Google Chat 데스크탑 앱`
             });
           }
         }

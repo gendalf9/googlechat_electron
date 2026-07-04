@@ -108,7 +108,7 @@ describe('Security Tests', () => {
 
     expect(mainContent).toContain('userAgent');
     expect(mainContent).toContain('Mozilla/5.0');
-    expect(mainContent).toContain('Chrome/120.0.0.0');
+    expect(mainContent).toContain('Chrome/138.0.0.0');
   });
 
   test('download handler checks URL security', () => {

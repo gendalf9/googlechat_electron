@@ -11,9 +11,11 @@ const WINDOW_OPEN_ALLOWED_SUBSTRINGS = ['chat.google.com', 'google.com/chat'];
 // will-navigate (main.js:203-204): substring match on hostname only.
 const NAVIGATION_ALLOWED_HOSTNAME_SUBSTRINGS = ['chat.google.com', 'google.com'];
 
-// Stale as of extraction (Phase 3 updates to current Chrome stable).
+// Chrome stable as of 2026-07. Load verification pending (Electron binary
+// unavailable in dev env — verify on first packaged launch; rollback if
+// Google Chat rejects). Was Chrome/120 (stale ~2.5y).
 const USER_AGENT =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36';
 
 const APP_NAME = 'Google Chat Desktop';
 const WINDOW_TITLE = 'Google Chat';

@@ -13,7 +13,6 @@ require('./keyboard');
 const { cleanupErrorHandler } = require('./error-handler');
 const { cleanupTitleObserver } = require('./title-observer');
 const { cleanupKeyboard } = require('./keyboard');
-
 contextBridge.exposeInMainWorld('electronAPI', {
   showNotification: (title, body) => ipcRenderer.send('show-notification', title, body),
   hideWindow: () => ipcRenderer.send('hide-window'),
@@ -22,7 +21,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   downloadFile: (url, fileName) => ipcRenderer.send('download-file', url, fileName),
 
-  getAppVersion: () => process.env.APP_VERSION || '1.0.0',
+  getAppVersion: () => ipcRenderer.sendSync('get-app-version'),
 
   getPlatform: () => process.platform,
 

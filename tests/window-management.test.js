@@ -65,7 +65,7 @@ describe('Window Management Tests', () => {
     const mainContent = readMainSource();
 
     expect(mainContent).toContain('userAgent');
-    expect(mainContent).toContain('Chrome/120.0.0.0');
+    expect(mainContent).toContain('Chrome/138.0.0.0');
   });
 
   test('window cleanup is properly implemented', () => {
