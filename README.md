@@ -88,32 +88,44 @@ This application includes several optimizations for minimal CPU usage:
 
 ```
 gchat_electron/
-├── main.js              # Main Electron process
-├── preload.js           # Preload script for secure IPC
-├── index.html           # Loading screen and fallback UI
-├── assets/              # Application resources
-│   └── icon.png        # Application icon
-├── package.json         # Package configuration
-├── CLAUDE.md            # Development guidance
-└── README.md           # This documentation
-```
+├── src/
+│   ├── main/                # Main Electron process (modularized)
+│   │   ├── index.js         # Entry: app lifecycle, wiring, showNotification
+│   │   ├── window.js        # createWindow + cleanupWindow
+│   │   ├── tray.js          # System tray
+│   │   ├── menu.js          # Application menu
+│   │   ├── navigation-guard.js   # setWindowOpenHandler + will-navigate (2 predicates)
+│   │   ├── context-menu.js  # Right-click context menu
+│   │   ├── session-download-handler.js  # will-download, Korean filename decode
+│   │   ├── optimization-injection.js    # did-finish-load renderer bootstrap
+│   │   ├── memory-monitor.js
+│   │   ├── ipc.js           # 6 IPC handlers
+│   │   ├── constants.js     # UA, URLs, domain lists, config
+│   │   └── timers.js        # Timer/interval singleton registry
+│   └── preload/             # Preload (secure IPC bridge)
+│       ├── index.js         # contextBridge API (8 methods)
+│       ├── title-observer.js
+│       ├── keyboard.js
+│       └── error-handler.js
+├── index.html               # Loading screen and fallback UI
+├── assets/                  # Application resources
+│   └── icon.png             # Application icon
+└── package.json             # Package configuration
 
 ## Architecture
 
-### Main Process (main.js)
+### Main Process (src/main/)
 
-- Window creation and management
-- System tray implementation
-- Menu and shortcut configuration
-- External link handling
-- Performance optimizations
+Modular entry (`src/main/index.js`) delegates to focused modules: window
+management, system tray, application menu, navigation guards, context menu,
+download handling, renderer optimization injection, memory monitoring, and
+IPC handlers. See `CHANGELOG.md` [1.1.0] for the modularization rationale.
 
-### Preload Script (preload.js)
+### Preload Script (src/preload/)
 
-- Secure IPC bridge between main and renderer processes
-- Google Chat page loading detection
-- Keyboard event handling
-- Performance monitoring
+`src/preload/index.js` exposes a stable `electronAPI` (8 methods) via
+`contextBridge`. Title-observer, keyboard shortcuts, and error handling are
+split into sibling modules required at preload load.
 
 ### Renderer (index.html)
 

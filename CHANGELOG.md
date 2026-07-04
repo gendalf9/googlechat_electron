@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.1.0] - 2026-07-04
+
+### Changed
+
+- **Architecture**: Modularized monolithic `main.js` (832 lines) and `preload.js`
+  (461 lines) into a layered structure under `src/main/` and `src/preload/`.
+  Entry moved to `src/main/index.js`; clean cutover (no shims).
+- **User Agent**: Updated stale Chrome/120 to Chrome/138 for Google Chat
+  compatibility.
+- **Navigation guards preserved**: `setWindowOpenHandler` and `will-navigate`
+  kept as separate predicates with different domain logic (unifying would
+  change auth-redirect behavior).
+- **CommonJS retained** (no ESM migration).
+
+### Fixed
+
+- **getAppVersion bug**: preload `getAppVersion` always returned `'1.0.0'`
+  (env var never set); now queries the main process via `sendSync`.
+- **Menu version string**: hardcoded "Version 1.0.8" replaced with
+  `app.getVersion()`.
+- **Dependencies**: removed unused `@tauri-apps/cli`; aligned
+  `jest-environment-jsdom` to `^29.7.0` (matches jest 29.7); restored
+  `js-yaml` override at the fixed `^4.1.2` (the vulnerable `^4.1.1` was
+  re-exposed when removed).
+- **CI**: removed dead `update-dependencies` job (no schedule trigger);
+  bumped `codecov-action` v3→v5 and `action-gh-release` v1→v2; Linux
+  release artifacts reduced to AppImage only.
+- **Cruft**: removed `.env.example` (dotenv unused) and `.taskmaster/`;
+  deduplicated `.gitignore`.
+
+### Added
+
+- **Behavior unit tests**: 17 high-signal tests for extracted pure functions
+  (navigation predicates incl. the M1 asymmetry, filename decode, UA format,
+  timers bookkeeping). Total 234 tests pass.
+
+### Notes
+
+- Manual GUI smoke and packaged-app launch verification deferred: the
+  Electron binary does not install under this dev environment's
+  allow-scripts policy. Verify on first packaged build.
+- Remaining `npm audit` findings (19) are pre-existing in the pinned
+  Electron 39.2 and the electron-builder transitive tree; out of scope for
+  this refactor.
+
 ## [1.0.8] - 2025-12-29
 
 ### Fixed
