@@ -59,9 +59,7 @@ function registerIpc({ getMainWindow, showNotification }) {
     const win = getMainWindow();
     if (win && win.webContents) {
       try {
-        return await win.webContents.executeJavaScript(
-          'window.electronAPI.getPerformanceInfo()'
-        );
+        return await win.webContents.executeJavaScript('window.electronAPI.getPerformanceInfo()');
       } catch (error) {
         console.error('Failed to get memory info:', error);
         return null;
@@ -75,9 +73,7 @@ function registerIpc({ getMainWindow, showNotification }) {
     const win = getMainWindow();
     if (win && win.webContents) {
       try {
-        return await win.webContents.executeJavaScript(
-          'window.electronAPI.requestMemoryCleanup()'
-        );
+        return await win.webContents.executeJavaScript('window.electronAPI.requestMemoryCleanup()');
       } catch (error) {
         console.error('Failed to cleanup memory:', error);
         return { error: error.message };

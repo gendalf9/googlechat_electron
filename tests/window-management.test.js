@@ -3,7 +3,7 @@ const path = require('path');
 describe('Window Management Tests', () => {
   test('main.js has window creation function', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('createWindow');
     expect(mainContent).toContain('new BrowserWindow');
@@ -11,7 +11,7 @@ describe('Window Management Tests', () => {
 
   test('window has correct initial dimensions', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('width: 1200');
     expect(mainContent).toContain('height: 800');
@@ -21,14 +21,14 @@ describe('Window Management Tests', () => {
 
   test('window has correct background color', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("backgroundColor: '#ffffff'");
   });
 
   test('window show behavior is correct', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('show: true');
     expect(mainContent).toContain('ready-to-show');
@@ -37,7 +37,7 @@ describe('Window Management Tests', () => {
 
   test('window hide on close instead of quit', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("on('close'");
     expect(mainContent).toContain('event.preventDefault()');
@@ -47,7 +47,7 @@ describe('Window Management Tests', () => {
 
   test('window focus handling is implemented', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('mainWindow.focus()');
     expect(mainContent).toContain('app.focus()');
@@ -55,14 +55,14 @@ describe('Window Management Tests', () => {
 
   test('window has proper title', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
-    expect(mainContent).toContain("title: 'Google Chat'");
+    expect(mainContent).toContain('title: WINDOW_TITLE');
   });
 
   test('window has custom user agent for Google Chat', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('userAgent');
     expect(mainContent).toContain('Chrome/120.0.0.0');
@@ -70,7 +70,7 @@ describe('Window Management Tests', () => {
 
   test('window cleanup is properly implemented', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('cleanupWindow');
     expect(mainContent).toContain('removeAllListeners');
@@ -79,7 +79,7 @@ describe('Window Management Tests', () => {
 
   test('window has proper icon', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('icon');
     expect(mainContent).toContain('assets/icon.png');
@@ -87,7 +87,7 @@ describe('Window Management Tests', () => {
 
   test('window has correct web security settings', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('nodeIntegration: false');
     expect(mainContent).toContain('contextIsolation: true');
@@ -96,7 +96,7 @@ describe('Window Management Tests', () => {
 
   test('window has performance optimizations', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('paintWhenInitiallyHidden: false');
     expect(mainContent).toContain('backgroundThrottling: true');

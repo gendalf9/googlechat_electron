@@ -10,7 +10,7 @@ describe('Application Integration Tests', () => {
     // Verify that the main process can be required without errors
     expect(() => {
       const fs = require('fs');
-      const mainPath = path.join(__dirname, '../main.js');
+      const mainPath = path.join(__dirname, '../src/main/index.js');
       expect(fs.existsSync(mainPath)).toBe(true);
     }).not.toThrow();
   });
@@ -19,7 +19,7 @@ describe('Application Integration Tests', () => {
     // Verify that the preload script exists
     expect(() => {
       const fs = require('fs');
-      const preloadPath = path.join(__dirname, '../preload.js');
+      const preloadPath = path.join(__dirname, '../src/preload/index.js');
       expect(fs.existsSync(preloadPath)).toBe(true);
     }).not.toThrow();
   });
@@ -41,7 +41,7 @@ describe('Application Integration Tests', () => {
     // Verify package.json configuration
     expect(() => {
       const packageJson = require('../package.json');
-      expect(packageJson.main).toBe('main.js');
+      expect(packageJson.main).toBe('src/main/index.js');
       expect(packageJson.name).toBe('gchat_electron');
       expect(packageJson.version).toBeDefined();
       expect(packageJson.scripts).toBeDefined();
@@ -63,7 +63,7 @@ describe('Application Integration Tests', () => {
 
   test('all required files are present', () => {
     // Verify all essential files exist
-    const requiredFiles = ['../main.js', '../preload.js', '../index.html', '../package.json'];
+    const requiredFiles = ['../src/main/index.js', '../src/preload/index.js', '../index.html', '../package.json'];
 
     requiredFiles.forEach(file => {
       const filePath = path.join(__dirname, file);

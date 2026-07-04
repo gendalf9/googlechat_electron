@@ -7,10 +7,10 @@ describe('Main Process Tests', () => {
   test('main.js file exists and has basic structure', () => {
     expect(() => {
       const fs = require('fs');
-      const mainPath = path.join(__dirname, '../main.js');
+      const mainPath = path.join(__dirname, '../src/main/index.js');
       expect(fs.existsSync(mainPath)).toBe(true);
 
-      const mainContent = fs.readFileSync(mainPath, 'utf8');
+      const mainContent = readMainSource();
 
       // Check for essential Electron imports
       expect(mainContent).toContain("require('electron')");
@@ -27,7 +27,7 @@ describe('Main Process Tests', () => {
   test('main.js has proper event handlers', () => {
     expect(() => {
       const fs = require('fs');
-      const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+      const mainContent = readMainSource();
 
       // Check for app event handlers
       expect(mainContent).toContain('app.whenReady');
@@ -42,7 +42,7 @@ describe('Main Process Tests', () => {
   test('main.js includes security features', () => {
     expect(() => {
       const fs = require('fs');
-      const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+      const mainContent = readMainSource();
 
       // Check for security configurations
       expect(mainContent).toContain('contextIsolation');
@@ -57,7 +57,7 @@ describe('Main Process Tests', () => {
   test('main.js has performance optimizations', () => {
     expect(() => {
       const fs = require('fs');
-      const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+      const mainContent = readMainSource();
 
       // Check for performance-related code
       expect(mainContent).toContain('backgroundThrottling');
@@ -67,7 +67,7 @@ describe('Main Process Tests', () => {
   test('main.js handles window lifecycle properly', () => {
     expect(() => {
       const fs = require('fs');
-      const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+      const mainContent = readMainSource();
 
       // Check for window lifecycle management
       expect(mainContent).toContain("on('closed'");

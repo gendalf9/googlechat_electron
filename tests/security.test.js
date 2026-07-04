@@ -3,35 +3,35 @@ const path = require('path');
 describe('Security Tests', () => {
   test('context isolation is enabled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('contextIsolation: true');
   });
 
   test('node integration is disabled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('nodeIntegration: false');
   });
 
   test('web security is enabled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('webSecurity: true');
   });
 
   test('insecure content is not allowed', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('allowRunningInsecureContent: false');
   });
 
   test('experimental features are disabled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('experimentalFeatures: false');
     expect(mainContent).toContain('enableBlinkFeatures: false');
@@ -39,14 +39,14 @@ describe('Security Tests', () => {
 
   test('remote module is disabled', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('enableRemoteModule: false');
   });
 
   test('contextBridge is used for secure IPC', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('contextBridge');
     expect(preloadContent).toContain('exposeInMainWorld');
@@ -55,7 +55,7 @@ describe('Security Tests', () => {
 
   test('only specific API functions are exposed', () => {
     const fs = require('fs');
-    const preloadContent = fs.readFileSync(path.join(__dirname, '../preload.js'), 'utf8');
+    const preloadContent = readPreloadSource();
 
     expect(preloadContent).toContain('showNotification');
     expect(preloadContent).toContain('hideWindow');
@@ -68,7 +68,7 @@ describe('Security Tests', () => {
 
   test('external links are handled securely', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('setWindowOpenHandler');
     expect(mainContent).toContain('shell.openExternal');
@@ -77,7 +77,7 @@ describe('Security Tests', () => {
 
   test('only Google Chat domain is allowed for navigation', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('chat.google.com');
     expect(mainContent).toContain('google.com');
@@ -86,7 +86,7 @@ describe('Security Tests', () => {
 
   test('will-navigate handler prevents external navigation', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('will-navigate');
     expect(mainContent).toContain('parsedUrl.hostname');
@@ -94,7 +94,7 @@ describe('Security Tests', () => {
 
   test('IPC handlers use proper event patterns', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain("ipcMain.on('show-notification'");
     expect(mainContent).toContain("ipcMain.on('hide-window'");
@@ -104,7 +104,7 @@ describe('Security Tests', () => {
 
   test('custom user agent is used for compatibility', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('userAgent');
     expect(mainContent).toContain('Mozilla/5.0');
@@ -113,7 +113,7 @@ describe('Security Tests', () => {
 
   test('download handler checks URL security', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('chat.google.com');
     expect(mainContent).toContain('get_attachment_url');
@@ -121,7 +121,7 @@ describe('Security Tests', () => {
 
   test('context menu limits dangerous operations', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('context-menu');
     expect(mainContent).toContain('event.preventDefault()');
@@ -129,7 +129,7 @@ describe('Security Tests', () => {
 
   test('webGL and webAudio are disabled for security', () => {
     const fs = require('fs');
-    const mainContent = fs.readFileSync(path.join(__dirname, '../main.js'), 'utf8');
+    const mainContent = readMainSource();
 
     expect(mainContent).toContain('webgl: false');
     expect(mainContent).toContain('webaudio: false');

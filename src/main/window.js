@@ -120,10 +120,7 @@ function createWindow({ preloadPath }) {
 
     if (mainWindow && mainWindow.webContents && mainWindow.webContents.session) {
       if (mainWindow._downloadHandler) {
-        mainWindow.webContents.session.removeListener(
-          'will-download',
-          mainWindow._downloadHandler
-        );
+        mainWindow.webContents.session.removeListener('will-download', mainWindow._downloadHandler);
         mainWindow._downloadHandler = null;
       }
       mainWindow.webContents.session.removeAllListeners('will-download');
